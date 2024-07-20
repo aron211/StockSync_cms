@@ -8,7 +8,7 @@
         'v-image--sm': this.$vuetify.breakpoint.smAndDown,
         'v-image--md': this.$vuetify.breakpoint.mdAndDown
       }"
-      :src="require(`@/assets/${src || 'home1.jpeg'}`)"
+      :src="require(`@/assets/${src || 'loginStockSync.png'}`)"
       gradient="to top, rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)"
       style="object-fit: contain; min-width: 100vw; min-height: 100vh;"
     >

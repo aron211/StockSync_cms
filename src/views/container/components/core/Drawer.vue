@@ -81,7 +81,7 @@
 // Utilities
   import { mapState } from 'vuex'
   // import logo from '../../../../assets/LogoVitalFix.png'
-  import logo from '../../../../assets/logoBarber.jpeg'
+  import logo from '../../../../assets/pedidos.jpg'
 
   export default {
     name: 'DashboardCoreDrawer',
@@ -155,96 +155,42 @@
       },
       setMenuItems() {
       const role = localStorage.getItem('rol');
-
-      this.items = [
+      if (role === 'admin') {
+        this.items = [
         {
           group: '/home',
           icon: 'mdi-view-dashboard',
           title: 'DASHBOARD',
-          to: 'Dashboard',
-          children: [
-            {
-              title: 'Dashboard',
-              to: 'Dashboard',
-            }, 
-          ],
+          to: '/home/Dashboard',
         },
         {
           group: '/home',
-          icon: 'mdi-plus-network', // se cambia este icono en los iconos del material de vue
-          title: 'Barbers',
-          to: 'users/users',
+          icon: 'mdi-plus-network',
+          title: 'Usuarios',
+          to: '/home/users/users',
         },
         {
           group: '/home',
-          icon: 'mdi-plus-network', // se cambia este icono en los iconos del material de vue
-          title: 'Services',
-          to: 'Services/Services',
+          icon: 'mdi-plus-network',
+          title: 'Pedidos',
+          to: '/home/Services/Services',
         },
-        {
-          group: '/home',
-          icon: 'mdi-format-page-break', // se cambia este icono en los iconos del material de vue
-          title: 'Orders',
-          to: 'typeServices/typeServices',
-        },
+        
       ]
-      // if (role === 'admin') {
-      //   this.items = [
-      //   {
-      //     group: '/home',
-      //     icon: 'mdi-view-dashboard',
-      //     title: 'DASHBOARD',
-      //     to: 'Dashboard',
-      //     children: [
-      //       {
-      //         title: 'Dashboard',
-      //         to: 'Dashboard',
-      //       }, 
-      //     ],
-      //   },
-      //   {
-      //     group: '/home',
-      //     icon: 'mdi-plus-network', // se cambia este icono en los iconos del material de vue
-      //     title: 'Barbers',
-      //     to: 'users/users',
-      //   },
-      //   {
-      //     group: '/home',
-      //     icon: 'mdi-plus-network', // se cambia este icono en los iconos del material de vue
-      //     title: 'Services',
-      //     to: 'Services/Services',
-      //   },
-      //   {
-      //     group: '/home',
-      //     icon: 'mdi-format-page-break', // se cambia este icono en los iconos del material de vue
-      //     title: 'Orders',
-      //     to: 'typeServices/typeServices',
-      //   },
-      // ]
-      // } else {
-      //   this.items = [
-      //   {
-      //     group: '/home',
-      //     icon: 'mdi-format-page-break',
-      //     title: 'REPORTES',
-      //     children: [
-      //       {
-      //         title: 'Solicitudes pendientes',
-      //         to: 'Requests/Requests',
-      //       },
-      //       {
-      //         title: 'Ordenes completadas',
-      //         to: 'Orders/Orders',
-      //       },
-      //       {
-      //         title: 'Revisiones',
-      //         to: 'Reviews/Reviews',
-      //       },
-
-      //     ],
-      //   },
-      //   ];
-      // }
+      } else {
+        this.items = [
+        {
+          group: '/home',
+          icon: 'mdi-view-dashboard',
+          title: 'DASHBOARD',
+          to: '/home/Dashboard',
+        },
+        {
+              title: 'Pedidos',
+              to: '/home/Services/Services',
+            },
+        ];
+      }
     },
     },
   }

@@ -11,7 +11,8 @@
     >
       <template v-slot:after-heading>
         <div class="display-2 font-weight-light">
-          {{ $t("services.head") }}
+          <!-- {{ $t("services.head") }} -->
+            Pedidos
         </div>
       </template>
 
@@ -108,7 +109,7 @@
           <v-card-title
             class="text-h5"
           >
-            Estas seguro que deseas eliminar este servicio?
+            Estas seguro que deseas eliminar este pedido?
           </v-card-title>
           <v-card-actions>
             <v-spacer />
@@ -163,21 +164,44 @@
       message: '',
       hidden: false,
       idser: null,
+      // headers: [
+      //   {
+      //     text: i18n.t('services.name'),
+      //     value: 'name',
+      //   },
+      //   {
+      //     text: i18n.t('services.type'),
+      //     value: 'type.name',
+      //   },
+      //   {
+      //     text: i18n.t('services.description'),
+      //     value: 'description',
+      //   },
+      //   {
+      //     text: i18n.t('services.price'),
+      //     value: 'price',
+      //   },
+      //   {
+      //     sortable: false,
+      //     text: 'Acciones',
+      //     value: 'actions',
+      //   },
+      // ],
       headers: [
         {
-          text: i18n.t('services.name'),
+          text: 'Nro Pedido',
           value: 'name',
         },
         {
-          text: i18n.t('services.type'),
+          text: 'Cliente',
           value: 'type.name',
         },
         {
-          text: i18n.t('services.description'),
+          text: 'Fecha',
           value: 'description',
         },
         {
-          text: i18n.t('services.price'),
+          text: 'Total Bs',
           value: 'price',
         },
         {
@@ -186,39 +210,8 @@
           value: 'actions',
         },
       ],
-      // items: [],
-      items: [
-      {
-        name: 'Corte de Cabello',
-        type: { name: 'Servicio Básico' },
-        description: 'Corte de cabello tradicional para hombre.',
-        price: '$15.00'
-      },
-      {
-        name: 'Afeitado Clásico',
-        type: { name: 'Servicio Básico' },
-        description: 'Afeitado con navaja y toallas calientes.',
-        price: '$20.00'
-      },
-      {
-        name: 'Corte y Tinte',
-        type: { name: 'Servicio Premium' },
-        description: 'Corte de cabello y aplicación de tinte.',
-        price: '$45.00'
-      },
-      {
-        name: 'Tratamiento Capilar',
-        type: { name: 'Servicio Premium' },
-        description: 'Tratamiento de hidratación y nutrición para el cabello.',
-        price: '$30.00'
-      },
-      {
-        name: 'Corte de barba',
-        type: { name: 'Servicio basico' },
-        description: 'afeitado y forma de barba con bigotes.',
-        price: '$20.00'
-      },
-    ],
+      items: [],
+
       search: undefined,
 
     }),

@@ -162,40 +162,43 @@
         password: this.user.password,
       };
 
-      if(this.user.email=="admin@gmail.com"){
-        this.$router.push({ name: 'Dashboard' })
-      }
+      // if(this.user.email=="admin@gmail.com"){
+      //   this.$router.push({ name: 'Dashboard' })
+      // }
 
 
       // Llama a la API para autenticar al usuario
-    //   const result = await apiHttp('post', '/api/v1/auth/login', userToLogin);
-    //   if (result.status==201) {
-    //     // Autenticación exitosa, redirige al usuario al dashboard
-    //     localStorage.setItem("rol",result.data.role)
-    //    let role= localStorage.getItem("rol")
+      const result = await apiHttp('post', '/api/v1/auth/login',userToLogin);
+      if (result.status==201) {
+        // Autenticación exitosa, redirige al usuario al dashboard
+        localStorage.setItem("rol",result.data.role)
+        localStorage.setItem("name",result.data.name)
+        localStorage.setItem("lastName",result.data.lastname)
+        localStorage.setItem("id",result.data.id)
+       let role= localStorage.getItem("rol")
        
-    //    if(role !== 'user'){
-    //     localStorage.setItem("token",result.data.token)
-    //     localStorage.setItem("rol",result.data.role)
-    //   this.$router.push('/home/Dashboard'); 
+       if(role !== 'user'){
+        localStorage.setItem("token",result.data.token)
+        localStorage.setItem("rol",result.data.role)
+      this.$router.push('/home/Dashboard'); 
         
           
-    //     }else{
-    //       this.dialog = true
-    //     this.message= 'usuario no registrado'
-    //     localStorage.removeItem('rol')
-    //     }
+        }else{
+          this.dialog = true
+        this.message= 'usuario no registrado'
+        localStorage.removeItem('rol')
+        }
       
-    //   } else {
-    //     // Muestra un mensaje de error si la autenticación falla
-    //     this.dialog = true;
-    //     this.message = result.message.text;
-    //   }
+      } else {
+        // Muestra un mensaje de error si la autenticación falla
+        this.dialog = true;
+        this.message = result.message.text;
+      }
      
-    // } else {
-    //   // Muestra un mensaje si los campos no están completos
-    //   this.dialog = true;
-    //   this.message = 'Debe llenar todos los campos';
+    } else {
+      // Muestra un mensaje si los campos no están completos
+      this.dialog = true;
+      this.message = 'Debe llenar todos los campos';
      }
   },
 

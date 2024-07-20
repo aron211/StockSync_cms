@@ -17,7 +17,7 @@
 
         <div class="display-2 font-weight-light">
           <!-- {{ $t("users.head") }} -->
-          Barbers
+          Usuarios
         </div>
         <!-- </v-img> -->
 
@@ -37,7 +37,7 @@
       <v-divider class="mt-3" />
       <v-data-table
         :headers="headers"
-        :items="items"
+        :items="filteredItems"
         :search.sync="search"
         :sort-by="['id', 'titulo']"
         :sort-desc="[false, true]"
@@ -116,7 +116,7 @@
           <v-card-title
             class="text-h5"
           >
-            Estas seguro que deseas eliminar este Blog?
+            Estas seguro que deseas eliminar este Usuario?
           </v-card-title>
           <v-card-actions>
             <v-spacer />
@@ -170,7 +170,7 @@
       snackbar: false,
       message: '',
       hidden: false,
-      iduser: null,
+      id: null,
       headers: [
        
         {
@@ -198,15 +198,18 @@
           value: 'actions',
         },
       ],
-      // items: [ ],
-      items: [
-      { name: 'Juan', lastname: 'Perez', email: 'juan.perez@example.com' },
-      { name: 'Ana', lastname: 'Gomez', email: 'ana.gomez@example.com' },
-      { name: 'Luis', lastname: 'Martinez', email: 'luis.martinez@example.com' }
-    ],
+      items: [ ],
       search: undefined,
 
     }),
+
+    computed: {
+      filteredItems() {
+      const loggedUserId = localStorage.getItem('id');
+      console.log("idUserLogged: ",loggedUserId)
+      return this.items.filter(item => item.id !== loggedUserId);
+    }
+    },
 
     mounted () {
       this.data()

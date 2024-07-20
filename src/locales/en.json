@@ -244,7 +244,8 @@
   "message": {
     "apiError401": "Incorrect credentials",
     "apiError404": "Service not available",
-    "apiError405_406": "Invalid request",
+    "apiError405": "Invalid request 405",
+    "apiError406": "Invalid request 406",
     "apiError500": "Connection error",
     "apiErrorUndefined": "General Application Error",
     "invalidKey": "Invalid key"
