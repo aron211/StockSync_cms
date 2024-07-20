@@ -172,6 +172,12 @@
         {
           group: '/home',
           icon: 'mdi-plus-network',
+          title: 'Clientes',
+          to: '/home/Clients/Clients',
+        },
+        {
+          group: '/home',
+          icon: 'mdi-plus-network',
           title: 'Pedidos',
           to: '/home/Services/Services',
         },

@@ -154,6 +154,17 @@ export default new Router({
         },
         // Users
         {
+          name: 'Client',
+          path: 'clients/clients',
+          // beforeEnter: AuthorizationFunction,
+          component: () => import('@/views/container/Client/Client'),
+        },        {
+          name: 'ClientsForm',
+          path: 'clients/form',
+          // beforeEnter: AuthorizationFunction,
+          component: () => import('@/views/container/Client/ClientForm'),
+        },
+        {
           name: 'Users',
           path: 'users/users',
           // beforeEnter: AuthorizationFunction,
