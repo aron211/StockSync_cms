@@ -33,9 +33,10 @@
                 label="Correo electrónico"
                 prepend-icon="mdi-email"
                 required
-                :rules="[rules.required,rules.emailRules]"
-              />
-
+                :rules="[rules.required]"
+                />
+                
+                <!-- :rules="[rules.required,rules.emailRules]" -->
               <v-text-field
                 v-model="user.password"
                 :append-icon="show1 ? 'mdi-eye' : ' mdi-eye-off'"

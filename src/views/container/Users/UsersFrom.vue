@@ -1,9 +1,5 @@
 <template>
-  <v-container
-    id="Servicios-profile"
-    fluid
-    tag="section"
-  >
+  <v-container id="Servicios-profile" fluid tag="section">
     <v-row justify="center">
       <base-material-card icon="mdi-account-outline">
         <template v-slot:heading>
@@ -15,7 +11,7 @@
             <v-tab class="mr-3">
               <v-icon class="mr-2">mdi-account-key</v-icon>
               <!-- {{ getTitleButton }} -->
-              Barbers
+              Usuarios
             </v-tab>
           </v-tabs>
         </template>
@@ -40,79 +36,65 @@
         <v-tabs-items v-model="tabs" class="transparent">
           <v-tab-item :key="0">
             <v-form ref="form" lazy-validation>
+              <v-col cols="12" md="6" :hidden="option == 2 || option === 3">
+                <v-autocomplete  
+                  v-model="selectedClient"
+                  :items="itemsClient"
+                  label="Seleciona el cliente a agregar"
+                  item-text="name"
+                  item-value="id"
+                  class="purple-input"
+                  outlined
+                  :readonly="option === 2 || option === 2"
+                  @change="updateClientData"
+                />
+              </v-col>
               <v-container class="py-0">
                 <v-row>
-                  
                   <v-col cols="12" md="6">
                     <v-text-field
                       v-model="user.name"
-                      :label="$t('users.Name')"
+                      label="Nombre del Cliente"
                       class="purple-input"
-                      :readonly="option === 2"
+                      :readonly="option === 1 || option === 2"
                       :rules="[rules.required]"
                     />
                   </v-col>
                   <v-col cols="12" md="6">
                     <v-text-field
                       v-model="user.lastname"
-                      :label="$t('Apellido')"
+                      label="Rif"
                       class="purple-input"
-                      :readonly="option === 2"
+                      :readonly="option === 1 || option === 2"
                       :rules="[rules.required]"
                     />
                   </v-col>
-                  <v-col  :hidden="option==3" cols="12" md="6">
+                  <v-col cols="12" md="6">
                     <v-text-field
-                      v-model="user.email"
-                      :label="$t('users.email')"
+                      v-model="user.reference"
+                      label="Codigo"
                       class="purple-input"
-                      :readonly="option === 2 || option === 3"
-                      :rules="[rules.emailRules]"
+                      :readonly="option === 1 || option === 2"
+                      :rules="[rules.required]"
                     />
                   </v-col>
-                  <!-- <v-col :hidden="option==3 || option==2" cols="12"  md="6">
-                    <v-text-field
-                      v-model="user.password"
-                      :type="show1 ? 'text' : 'password'"
-                      :append-icon="show1 ? 'mdi-eye' : ' mdi-eye-off'"
-                      :label="$t('users.password')"
-                      prepend-icon="mdi-lock-outline"
-                      class="purple-input"
-                      hint="At least 6 characters"
-                      :readonly="option === 3"
-                      counter
-                      @click:append="show1 = !show1"
-                      
-                    />
-                  </v-col> -->
                   <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="user.phone"
+                      color="secondary"
+                      label="Teléfono"
+                      :rules="[rules.required]"
+                      :readonly="option === 1 || option === 2"
+                    />
+                  </v-col>
+                  <v-col cols="12" md="12">
                     <v-text-field
                       v-model="user.address"
                       label="Direccion"
                       class="purple-input"
-                      :readonly="option === 2"
+                      :readonly="option === 1 || option === 2"
                       :rules="[rules.required]"
                     />
-                  </v-col>
-                  <!-- <v-col cols="12" md="6">
-                    <v-text-field
-                      v-model="user.reference"
-                      label="Referencia"
-                      class="purple-input"
-                      :readonly="option === 2"
-                      :rules="[rules.required]"
-                    />
-                  </v-col> -->
-                  <v-col cols="12" md="6">
-                   
-                        <v-text-field
-                          v-model="user.phone"
-                          color="secondary"
-                          label="Teléfono"
-                          :rules="[rules.required]"
-                          :readonly="option === 2"
-                        />
-                      
                   </v-col>
                   <!-- <v-col cols="12" md="6">
                     <v-select
@@ -127,6 +109,38 @@
                     
                     />
                   </v-col> -->
+                  <v-col cols="12" md="12">
+                    <h1 :hidden="option == 2 || option === 3">
+                      Ingrese usuario y contraseña con el que el cliente
+                      ingresara al sistema
+                    </h1>
+                    <h1 :hidden="option == 1 || option === 3">
+                      Nombre de usuario del cliente
+                    </h1>
+                  </v-col>
+                  <v-col :hidden="option == 3" cols="12" md="6">
+                    <v-text-field
+                      v-model="user.email"
+                      :label="$t('users.email')"
+                      class="purple-input"
+                      :readonly="option === 2 || option === 3"
+                    />
+                  </v-col>
+                  <v-col :hidden="option == 3 || option == 2" cols="12" md="6">
+                    <v-text-field
+                      v-model="user.password"
+                      :type="show1 ? 'text' : 'password'"
+                      :append-icon="show1 ? 'mdi-eye' : ' mdi-eye-off'"
+                      :rules="[rules.required,rules.min]"
+                      label="Ingrese una contraseña"
+                      prepend-icon="mdi-lock-outline"
+                      class="purple-input"
+                      hint="At least 6 characters"
+                      :readonly="option === 3"
+                      counter
+                      @click:append="show1 = !show1"
+                    />
+                  </v-col>
                   <v-col cols="12" class="text-right">
                     <v-btn
                       v-if="option !== 2"
@@ -135,7 +149,7 @@
                       @click="submit"
                     >
                       <!-- {{ getTitleButton }} -->
-                      Add Barber
+                      Agregar Usuario
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -169,167 +183,208 @@
   </v-container>
 </template>
 
-
 <script>
-  import i18n from '@/i18n'
-  import {createUser,updateUser} from '../../../api/modules/user'
+import i18n from "@/i18n";
+import { createUser, updateUser } from "../../../api/modules/user";
+import { clientGetList } from "../../../api/modules/client";
+import {apiHttp} from '../../../api/axiosApi'
 
-  export default {
+export default {
+  data: () => ({
+    tabs: 0,
+    option: 0,
+    setTimeout: 0,
+    show1: false,
+    title: "",
+    snackbar: "",
+    message: "",
 
-    data: () => ({
-      tabs: 0,
-      option: 0,
-      setTimeout:0,
-      show1: false,
-      title: '',
-      snackbar: '',
-      message: '',
-     
-      user: {
-        id: '',
-        name: '',
-        lastname: '',
-        email: '',
-        password: '',
-        role: '',
-        urlAvatar: '',
-        reference:'',
-        address:'',
-        phone:'',
-        code:'',
-        createdAt:'', 
-        updatedAt:''
-      },
-      roles:[
-        {
-          name:"admin"
-        },
-        {
-          name:"tecnico"
-        },
-        {
-          name:"user"
-        }
-      ],
-      rules: {
-        required: value => !!value || 'este dato es obligatorio.',
-        min: v => v.length >= 6 || 'Mínimo 6 caracteres',
-        emailRules: v => /.+@.+\..+/.test(v) || 'el correo deber ser valido. Ejemplo@email.com',
-        // passwordMatch: v => v === this.user.password || 'Las contraseñas deben coincidir'
-      
-        // emailMatch: () => "El correo y la contraseña no coinciden"
-      },
-      
-
-    }),
-    computed: {
-      getTitle () {
-        if (this.option === 1) return i18n.t('users.create')
-        else if (this.option === 2) return i18n.t('users.show')
-        else if (this.option === 3) return i18n.t('users.edit')
-        else return i18n.t('users.head')
-      },
-      getTitleButton () {
-        if (this.option === 1) return i18n.t('crud.create')
-        else if (this.option === 2) return i18n.t('crud.show')
-        else if (this.option === 3) return i18n.t('crud.edit')
-        else return i18n.t('users.head')
-      },
+    user: {
+      id: "",
+      name: "",
+      lastname: "",
+      email: "",
+      password: "",
+      role: "",
+      urlAvatar: "",
+      reference: "",
+      address: "",
+      phone: "",
+      code: "",
+      createdAt: "",
+      updatedAt: ""
     },
-    mounted () {
-      this.initialize()
+    client: {
+      id: "",
+      name: "",
+      codigo: "",
+      rif: "",
+      address: "",
+      phone: ""
     },
-
-    methods: {
-      initialize () {
-        this.option = this.$route.params.option
-        if (this.option === 3 || this.option === 2) {
-          this.user = this.$route.params.usersData;
-        }
-       
-         
+    selectedClient: null,
+    itemsClient: [],
+    roles: [
+      {
+        name: "admin"
       },
+      {
+        name: "tecnico"
+      },
+      {
+        name: "user"
+      }
+    ],
+    rules: {
+      required: value => !!value || "este dato es obligatorio.",
+      min: v => v.length >= 6 || "Mínimo 6 caracteres",
+      emailRules: v =>
+        /.+@.+\..+/.test(v) || "el correo deber ser valido. Ejemplo@email.com"
+      // passwordMatch: v => v === this.user.password || 'Las contraseñas deben coincidir'
 
-     async  submit () {
-        if (this.option === 1) {
-          if (this.$refs.form.validate()) {
+      // emailMatch: () => "El correo y la contraseña no coinciden"
+    }
+  }),
+  computed: {
+    getTitle() {
+      if (this.option === 1) return i18n.t("users.create");
+      else if (this.option === 2) return i18n.t("users.show");
+      else if (this.option === 3) return i18n.t("users.edit");
+      else return i18n.t("users.head");
+    },
+    getTitleButton() {
+      if (this.option === 1) return i18n.t("crud.create");
+      else if (this.option === 2) return i18n.t("crud.show");
+      else if (this.option === 3) return i18n.t("crud.edit");
+      else return i18n.t("users.head");
+    }
+  },
+  mounted() {
+    this.initialize();
+    this.getListClient();
+  },
 
-            let user = {
-              name: this.user.name,
-              lastname: this.user.lastname,
-              email: this.user.email,
-              password : this.user.password,
-              role: this.user.role,
-              reference:this.user.reference,
-              address: this.user.address,
-              phone:this.user.phone,
-              urlAvatar:""
+  methods: {
+    initialize() {
+      this.option = this.$route.params.option;
+      if (this.option === 3 || this.option === 2) {
+        this.user = this.$route.params.usersData;
+      }
+    },
+    async getListClient() {
+      let result;
+      result = await clientGetList();
+      if (result.status == 200) {
+        console.log(result.data);
+        this.itemsClient = result.data;
+      } else {
+        this.dialog = true;
+        this.message = result.message.text;
+      }
+    },
+    updateClientData() {
+      const client = this.itemsClient.find(
+        item => item.id === this.selectedClient
+      );
+      if (client) {
+        this.user.address = client.address || "";
+        this.user.phone = client.phone || "";
+        this.user.name = client.name || "";
+        this.user.lastname = client.rif || "";
+        this.user.reference = client.codigo || "";
+      }
+    },
+    async submit() {
+      if (this.option === 1) {
+        if (this.$refs.form.validate()) {
+          let user = {
+            name: this.user.name,
+            lastname: this.user.lastname,
+            role: 'tecnico',
+            email: this.user.email,
+            password: this.user.password,
+            address: this.user.address,
+            reference: this.user.reference,
+            phone: this.user.phone,
+            // urlAvatar: ""
+          };
+          const   result = await apiHttp('post', '/api/v1/auth/register',user)
 
-            }
-           
-             user = await createUser(user)
+          if (result.status==201) {
 
-            if (user.status==201) {
-              this.snackbar = true
-              this.message = 'Registro exitoso'
-            
-               setTimeout(() => {
-                 this.$router.push({ name: 'Users' })
-               }, 2000)
-            } else {
-              this.snackbar = true
-              this.message = 'Hubo un error durante el registro'
-              setTimeout(() => {
-                this.snackbar = false
-              }, 1000)
-            }
+          this.snackbar = true;
+          this.message = "Registro exitoso";
+          setTimeout(() => {
+                  this.$router.push({ name: 'Users' })
+                }, 2000)
+                
 
           } else {
-            this.snackbar = true
-            this.message = 'Debe llenar todos los campos requeridos'
-            setTimeout(() => {
-              this.snackbar = false
-            }, 1000)
+          // Muestra un mensaje de error si la autenticación falla
+          this.dialog = true;
+          this.message = result.message.text;
           }
-        }  
-        if (this.option === 3) {
-          if (this.$refs.form.validate()) {
+          // user = await createUser(user);
 
-            let id = this.user.id
-           
-            let user = {
-              name: this.user.name,
-              lastname: this.user.lastname,
-              reference:this.user.reference,
-              address: this.user.address,
-              phone: this.user.phone,
-            }
-           
-            user = await updateUser(id,user)
-            if (user.status == 200) {
-              this.snackbar = true
-              this.message = 'Actualizacion exitosa'
-              setTimeout(() => {
-                this.$router.push({ name: 'Users' })
-              }, 2000)
-            } else {
-              this.snackbar = true
-              this.message = 'Hubo un error durante la actualizacion'
-              setTimeout(() => {
-                this.snackbar = false
-              }, 1000)
-            }
-          } else {
-            this.snackbar = true
-            this.message = 'Debe llenar todos los campos requeridos'
-            setTimeout(() => {
-              this.snackbar = false
-            }, 1000)
-          }
+          // if (user.status == 201) {
+          //   this.snackbar = true;
+          //   this.message = "Registro exitoso";
+
+          //   setTimeout(() => {
+          //     this.$router.push({ name: "Users" });
+          //   }, 2000);
+          // } else {
+          //   this.snackbar = true;
+          //   this.message = "Hubo un error durante el registro";
+          //   setTimeout(() => {
+          //     this.snackbar = false;
+          //   }, 1000);
+          // }
+        } else {
+          this.snackbar = true;
+          this.message = "Debe llenar todos los campos requeridos";
+          setTimeout(() => {
+            this.snackbar = false;
+          }, 1000);
         }
-      },
-    },
+      }
+      if (this.option === 3) {
+        if (this.$refs.form.validate()) {
+          let id = this.user.id;
+
+          let user = {
+            name: this.user.name,
+            lastname: this.user.lastname,
+            reference: this.user.reference,
+            address: this.user.address,
+            phone: this.user.phone
+          };
+
+          user = await updateUser(id, user);
+          if (user.status == 200) {
+            this.snackbar = true;
+            this.message = "Actualizacion exitosa";
+            setTimeout(() => {
+              this.$router.push({ name: "Users" });
+            }, 2000);
+          } else {
+            this.snackbar = true;
+            this.message = "Hubo un error durante la actualizacion";
+            setTimeout(() => {
+              this.snackbar = false;
+            }, 1000);
+          }
+        } else {
+          this.snackbar = true;
+          this.message = "Debe llenar todos los campos requeridos";
+          setTimeout(() => {
+            this.snackbar = false;
+          }, 1000);
+        }
+      }
+    }
   }
+};
 </script>
 
 <style>

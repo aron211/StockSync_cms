@@ -58,7 +58,7 @@
               v-text="'mdi-eye'"
             />
           </v-btn>
-          <v-btn
+          <!-- <v-btn
             :key="2"
             color="four"
             fab
@@ -70,7 +70,7 @@
               small
               v-text="'mdi-pencil'"
             />
-          </v-btn>
+          </v-btn> -->
           <v-btn
             :key="3"
             color="primary"
@@ -247,16 +247,16 @@
           },
         })
       },
-      edit (item) {
-        console.log(item)
-        this.$router.push({
-          name: 'UsersFrom',
-          params: {
-            option: 3, // option 3 to edit
-            usersData: item,
-          },
-        })
-      },
+      // edit (item) {
+      //   console.log(item)
+      //   this.$router.push({
+      //     name: 'UsersFrom',
+      //     params: {
+      //       option: 3, // option 3 to edit
+      //       usersData: item,
+      //     },
+      //   })
+      // },
       deleteuser (item) {
         this.iduser = item.id
         this.dialogDelete = true
