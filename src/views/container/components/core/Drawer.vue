@@ -178,6 +178,12 @@
         {
           group: '/home',
           icon: 'mdi-plus-network',
+          title: 'Inventario',
+          to: '/home/inventory/inventory',
+        },
+        {
+          group: '/home',
+          icon: 'mdi-plus-network',
           title: 'Pedidos',
           to: '/home/Services/Services',
         },

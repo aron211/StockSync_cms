@@ -1,8 +1,7 @@
 import axios from 'axios'
 
-async function GetList() {
+async function inventoryGetList() {
     const result = await apiHttp('get', '/api/v1/inventario');
-    console.log('mostrame algo get:', result)
     return result;
 }
 
@@ -33,4 +32,4 @@ async function deleteinventario(id) {
     return result.request.statusText
 }
 
-export { GetList, createinventario, updateinventario, deleteinventario }
+export { inventoryGetList, createinventario, updateinventario, deleteinventario }

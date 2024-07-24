@@ -4,15 +4,24 @@
     tag="section"
   >
     <base-material-card
+      icon="mdi-account-group"
       color="greenligth"
-      icon="mdi-plus-network"
       inline
       class="px-5 py-3"
     >
       <template v-slot:after-heading>
+        <!-- <v-img
+          :src="logo"
+          class="img-Logo"
+        > -->
+
         <div class="display-2 font-weight-light">
-          {{ $t("inventory.head") }}
+          <!-- {{ $t("users.head") }} -->
+          Inventario
         </div>
+        <!-- </v-img> -->
+
+        <!-- <v-img :src="logo" class="img-Logo"></v-img> -->
       </template>
 
       <v-text-field
@@ -22,11 +31,10 @@
         label="Buscar"
         hide-details
         single-line
-        style="max-width: 250px;"
+        style="max-width: 250px"
       />
 
       <v-divider class="mt-3" />
-
       <v-data-table
         :headers="headers"
         :items="items"
@@ -50,7 +58,7 @@
               v-text="'mdi-eye'"
             />
           </v-btn>
-          <v-btn
+          <!-- <v-btn
             :key="2"
             color="four"
             fab
@@ -69,13 +77,13 @@
             fab
             class="px-1 ml-1"
             x-small
-            @click="deleteequips(item)"
+            @click="deleteuser(item)"
           >
             <v-icon
               small
               v-text="'mdi-delete'"
             />
-          </v-btn>
+          </v-btn> -->
         </template>
       </v-data-table>
 
@@ -108,7 +116,7 @@
           <v-card-title
             class="text-h5"
           >
-            Estas seguro que deseas eliminar este Equipo del inventario?
+            Estas seguro que deseas eliminar este Cliente?
           </v-card-title>
           <v-card-actions>
             <v-spacer />
@@ -153,65 +161,86 @@
 
   <script>
   import i18n from '@/i18n'
-  import { GetList, deleteinventario } from '../../../api/modules/inventario'
+  import { clientGetList ,deleteUser} from '../../../api/modules/client'
+  import { inventoryGetList} from '../../../api/modules/inventory'
   export default {
     name: 'DashboardDataTables',
     data: () => ({
       dialogDelete: false,
+      timeout:0,
       snackbar: false,
       message: '',
-      idinv: null,
       hidden: false,
+      id: null,
       headers: [
+       
         {
-          text: i18n.t('inventory.Name'),
+          text: 'Código',
+          value: 'codigo',
+        },
+        {
+          text: 'Nombre',
           value: 'name',
         },
-
         {
-          text: i18n.t('inventory.quantity'),
-          value: 'quantity',
+          text: 'Marca',
+          value: 'marca',
         },
         {
-          text: i18n.t('inventory.description'),
-          value: 'description',
+          text: 'cantidad',
+          value: 'cant',
         },
         {
-          text: i18n.t('inventory.status'),
-          value: 'status',
+          text: 'Precio al Detal',
+          value: 'priceD',
         },
+        {
+          text: 'Precio al Mayor',
+          value: 'priceM',
+        },
+        // {
+        //   text: 'País',
+        //   value: 'country',
+        // },
+       
+        // {
+        //   text: i18n.t('users.rol'),
+        //   value: 'role',
+        // },
+        
         {
           sortable: false,
           text: 'Acciones',
           value: 'actions',
         },
       ],
-      items: [
-        {name: "Junior",
-         quantity: "20",
-         description: "afsaf"
-        }
-      ],
+      items: [ ],
       search: undefined,
 
     }),
-  mounted () {
+
+
+    mounted () {
       this.data()
     },
+
     methods: {
       data: async function () {
         let result
-        result = await GetList()
-        console.log("🚀 ~ result:", result)
+        result = await inventoryGetList()
         if (result.status==200) {
-          this.items = result.data
+         console.log(result.data)
+         this.items = result.data
         } else {
-          console.log("Error api")
+        
+         this.dialog = true;
+         this.message = result.message.text;
         }
+
       },
       create () {
         this.$router.push({
-          name: 'InventoryForm',
+          name: 'inventoryForm',
           params: {
             option: 1, // option 1 to create
           },
@@ -223,53 +252,57 @@
           name: 'InventoryForm',
           params: {
             option: 2, // option 2 to show
-            invesData: item,
+            usersData: item,
           },
         })
       },
       edit (item) {
         console.log(item)
         this.$router.push({
-          name: 'InventoryForm',
+          name: 'ClientsForm',
           params: {
             option: 3, // option 3 to edit
-            invesData: item,
+            usersData: item,
           },
         })
       },
-      deleteequips (item) {
-        this.idinv = item.id
+      deleteuser (item) {
+        this.iduser = item.id
         this.dialogDelete = true
       },
       closeDelete () {
         this.dialogDelete = false
       },
 
-      deleteItemConfirm () {
-        this.dialogDelete = false
-      },
-
-      async deleteItemConfirm () {
-        let result
-        result = await deleteinventario(this.idinv)
-        console.log("🚀 ~ deleteItemConfirm ~ result:", result)
-        if (result === 'OK') {
-          this.snackbar = true
-          this.message = 'Eliminación exitosa'
-          this.data()
-          this.dialogDelete = false
-          setTimeout(() => {
-            this.$router.push({ name: 'Inventory' })
-          }, 1000)
-        } else {
-          this.snackbar = true
-          this.message = 'ocurrio un error al eliminar el Equipo'
-          setTimeout(() => {
-            this.snackbar = false
-          }, 1000)
-        }
-      },
+    
+        async deleteItemConfirm () {
+          let result
+          result = await deleteUser(this.iduser)
+          
+          if (result.status === 200) {
+         
+            this.dialogDelete = false
+            this.snackbar = true
+            this.message = 'Eliminación exitosa'
+           
+            setTimeout(() => {
+             
+              this.snackbar = false
+            }, 1000)
+            this.data()
+          } else {
+            console.log("ocurrio un error")
+            this.snackbar = true
+            this.data();
+            this.dialogDelete = false
+            this.message = 'ocurrio un error al eliminar al usuario'
+            setTimeout(() => {
+              this.snackbar = false
+            }, 1000)
+          }
+        },
     },
+
   }
   </script>
 
