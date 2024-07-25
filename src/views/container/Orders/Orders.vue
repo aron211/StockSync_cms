@@ -11,7 +11,8 @@
     >
       <template v-slot:after-heading>
         <div class="display-2 font-weight-light">
-          {{ $t("orders.head") }}
+          <!-- {{ $t("orders.head") }} -->
+            Pedidos
         </div>
       </template>
 
@@ -136,7 +137,7 @@
 
     <script>
   import i18n from '@/i18n'
-  import { GetList, deleteorder } from '../../../api/modules/orders'
+  import { inventoryGetList} from '../../../api/modules/inventory'
   export default {
     name: 'DashboardDataTables',
     data: () => ({
@@ -146,22 +147,30 @@
       hidden: false,
       idord: null,
       headers: [
+       
         {
-          text: i18n.t('orders.id'),
-          value: 'id',
-        },
-
-        {
-          text: i18n.t('orders.type'),
-          value: 'type',
+          text: 'Código',
+          value: 'codigo',
         },
         {
-          text: i18n.t('orders.amount'),
-          value: 'amount',
+          text: 'Nombre',
+          value: 'name',
         },
         {
-          text: i18n.t('orders.status'),
-          value: 'status',
+          text: 'Marca',
+          value: 'marca',
+        },
+        {
+          text: 'cantidad',
+          value: 'cant',
+        },
+        {
+          text: 'Precio al Detal',
+          value: 'priceD',
+        },
+        {
+          text: 'Precio al Mayor',
+          value: 'priceM',
         },
         {
           sortable: false,
@@ -179,14 +188,17 @@
     methods: {
       data: async function () {
         let result
-        result = await GetList()
+        result = await inventoryGetList()
         if (result.status==200) {
-          this.items = result.data
+         console.log(result.data)
+         this.items = result.data
         } else {
-          console.log("Error api")
+        
+         this.dialog = true;
+         this.message = result.message.text;
         }
-      },
 
+      },
       create () {
         this.$router.push({
           name: 'OrdersForm',

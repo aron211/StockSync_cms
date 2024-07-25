@@ -80,6 +80,18 @@ export default new Router({
           // beforeEnter: AuthorizationFunction,
           component: () => import('@/views/container/Inventory/InventoryForm'),
         },
+        {
+          name: 'Orders',
+          path: 'Orders/Orders',
+          // beforeEnter: AuthorizationFunction,
+          component: () => import('@/views/container/Orders/Orders'),
+        },
+        {
+          name: 'OrdersForm',
+          path: 'orders/form',
+          // beforeEnter: AuthorizationFunction,
+          component: () => import('@/views/container/Orders/OrdersForm'),
+        },
         // services
         {
           name: 'Services',
@@ -107,18 +119,7 @@ export default new Router({
           component: () => import('@/views/container/Requests/RequestsForm'),
         },
         // Orders
-        {
-          name: 'Orders',
-          path: 'orders/orders',
-          // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Orders/Orders'),
-        },
-        {
-          name: 'OrdersForm',
-          path: 'orders/form',
-          // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Orders/OrdersForm'),
-        },
+
         // Reviews
         {
           name: 'Reviews',

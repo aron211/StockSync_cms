@@ -185,7 +185,7 @@
           group: '/home',
           icon: 'mdi-plus-network',
           title: 'Pedidos',
-          to: '/home/Services/Services',
+          to: '/home/Orders/Orders',
         },
         
       ]
@@ -198,9 +198,11 @@
           to: '/home/Dashboard',
         },
         {
-              title: 'Pedidos',
-              to: '/home/Services/Services',
-            },
+          group: '/home',
+          icon: 'mdi-plus-network',
+          title: 'Pedidos',
+          to: '/home/Orders/Orders',
+        },
         ];
       }
     },
