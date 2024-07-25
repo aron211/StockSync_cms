@@ -77,7 +77,7 @@
               fab
               class="px-1 ml-1"
               x-small
-              @click="deleteuser(item)"
+              @click="deleteClient(item)"
             >
               <v-icon
                 small
@@ -161,7 +161,7 @@
   
     <script>
     import i18n from '@/i18n'
-    import { clientGetList ,deleteUser} from '../../../api/modules/client'
+    import { clientGetList ,deleteClient} from '../../../api/modules/client'
     export default {
       name: 'DashboardDataTables',
       data: () => ({
@@ -253,8 +253,8 @@
             },
           })
         },
-        deleteuser (item) {
-          this.iduser = item.id
+        deleteClient (item) {
+          this.idClient = item.id
           this.dialogDelete = true
         },
         closeDelete () {
@@ -264,7 +264,7 @@
       
           async deleteItemConfirm () {
             let result
-            result = await deleteUser(this.iduser)
+            result = await deleteClient(this.idClient)
             
             if (result.status === 200) {
            

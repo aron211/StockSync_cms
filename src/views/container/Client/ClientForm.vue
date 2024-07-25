@@ -45,8 +45,8 @@
                     
                     <v-col cols="12" md="6">
                       <v-text-field
-                        v-model="user.name"
-                        :label="$t('users.Name')"
+                        v-model="client.name"
+                        label="Nombre"
                         class="purple-input"
                         :readonly="option === 2"
                         :rules="[rules.required]"
@@ -54,7 +54,7 @@
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
-                        v-model="user.rif"
+                        v-model="client.rif"
                         label="Rif"
                         class="purple-input"
                         :readonly="option === 2"
@@ -62,50 +62,26 @@
                     </v-col>
                     <v-col  :hidden="option==3" cols="12" md="6">
                       <v-text-field
-                        v-model="user.codigo"
+                        v-model="client.codigo"
                         label="Codigo"
                         class="purple-input"
                         :readonly="option === 2 || option === 3"
                         :rules="[rules.emailRules]"
                       />
                     </v-col>
-                    <!-- <v-col :hidden="option==3 || option==2" cols="12"  md="6">
-                      <v-text-field
-                        v-model="user.password"
-                        :type="show1 ? 'text' : 'password'"
-                        :append-icon="show1 ? 'mdi-eye' : ' mdi-eye-off'"
-                        :label="$t('users.password')"
-                        prepend-icon="mdi-lock-outline"
-                        class="purple-input"
-                        hint="At least 6 characters"
-                        :readonly="option === 3"
-                        counter
-                        @click:append="show1 = !show1"
-                        
-                      />
-                    </v-col> -->
                     <v-col cols="12" md="6">
                       <v-text-field
-                        v-model="user.address"
+                        v-model="client.address"
                         label="Direccion"
                         class="purple-input"
                         :readonly="option === 2"
                         :rules="[rules.required]"
                       />
                     </v-col>
-                    <!-- <v-col cols="12" md="6">
-                      <v-text-field
-                        v-model="user.reference"
-                        label="Referencia"
-                        class="purple-input"
-                        :readonly="option === 2"
-                        :rules="[rules.required]"
-                      />
-                    </v-col> -->
                     <v-col cols="12" md="6">
                      
                           <v-text-field
-                            v-model="user.phone"
+                            v-model="client.phone"
                             color="secondary"
                             label="Teléfono"
                             :rules="[rules.required]"
@@ -113,19 +89,6 @@
                           />
                         
                     </v-col>
-                    <!-- <v-col cols="12" md="6">
-                      <v-select
-                        v-model="user.role"
-                        :items="roles"
-                        :label="$t('users.rol')"
-                        item-text="name"
-                        item-value="id"
-                        class="purple-input"
-                        outlined
-                        :readonly="option === 2"
-                      
-                      />
-                    </v-col> -->
                     <v-col cols="12" class="text-right">
                       <v-btn
                         v-if="option !== 2"
@@ -134,7 +97,7 @@
                         @click="submit"
                       >
                         <!-- {{ getTitleButton }} -->
-                        Add Barber
+                        Agregar Cliente
                       </v-btn>
                     </v-col>
                   </v-row>
@@ -171,7 +134,7 @@
   
   <script>
     import i18n from '@/i18n'
-    import {createUser,updateUser} from '../../../api/modules/user'
+    import {createClient,updateUser} from '../../../api/modules/client'
   
     export default {
   
@@ -199,17 +162,16 @@
           createdAt:'', 
           updatedAt:''
         },
-        roles:[
-          {
-            name:"admin"
-          },
-          {
-            name:"tecnico"
-          },
-          {
-            name:"user"
-          }
-        ],
+        client: {
+          id: "",
+          codigo: "",
+          name: "",
+          rif: "",
+          address: "",
+          phone: "",
+          createdAt: "",
+          updatedAt: ""
+        },
         rules: {
           required: value => !!value || 'este dato es obligatorio.',
           min: v => v.length >= 6 || 'Mínimo 6 caracteres',
@@ -243,7 +205,7 @@
         initialize () {
           this.option = this.$route.params.option
           if (this.option === 3 || this.option === 2) {
-            this.user = this.$route.params.usersData;
+            this.client = this.$route.params.clientData;
           }
          
            
@@ -253,29 +215,27 @@
           if (this.option === 1) {
             if (this.$refs.form.validate()) {
   
-              let user = {
-                name: this.user.name,
-                codigo: this.user.codigo,
-                rif: this.user.rif,
-                password : this.user.password,
-                role: this.user.role,
-                reference:this.user.reference,
-                address: this.user.address,
-                phone:this.user.phone,
-                urlAvatar:""
-  
+              let client = {
+                codigo: this.client.codigo,
+                name: this.client.name,
+                rif: this.client.rif,
+                address: this.client.address,
+                phone:this.client.phone,
               }
+            
+              const result = await createClient(client)
              
-               user = await createUser(user)
-  
-              if (user.status==201) {
+              
+              if (result.status==201) {
+              
                 this.snackbar = true
                 this.message = 'Registro exitoso'
-              
-                 setTimeout(() => {
-                   this.$router.push({ name: 'Users' })
-                 }, 2000)
+                
+                setTimeout(() => {
+                  this.$router.push({ name: 'Client' })
+                }, 2000)
               } else {
+
                 this.snackbar = true
                 this.message = 'Hubo un error durante el registro'
                 setTimeout(() => {
@@ -294,22 +254,21 @@
           if (this.option === 3) {
             if (this.$refs.form.validate()) {
   
-              let id = this.user.id
+              let id = this.client.id
+
+              let client = {
+            name: this.client.name,
+            codigo: this.client.codigo,
+            address: this.client.address,
+            phone: this.client.phone,
+          }
              
-              let user = {
-                name: this.user.name,
-                codigo: this.user.codigo,
-                reference:this.user.reference,
-                address: this.user.address,
-                phone: this.user.phone,
-              }
-             
-              user = await updateUser(id,user)
+              user = await updateUser(id,client)
               if (user.status == 200) {
                 this.snackbar = true
                 this.message = 'Actualizacion exitosa'
                 setTimeout(() => {
-                  this.$router.push({ name: 'Clients' })
+                  this.$router.push({ name: 'Client' })
                 }, 2000)
               } else {
                 this.snackbar = true
