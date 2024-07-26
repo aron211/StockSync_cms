@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from "vue";
+import Router from "vue-router";
 
-Vue.use(Router)
+Vue.use(Router);
 
 // function AuthorizationFunction(to, from, next) {
 //   let acction = false
@@ -31,299 +31,317 @@ Vue.use(Router)
 // }
 
 export default new Router({
-  mode: 'hash',
+  mode: "hash",
   base: process.env.BASE_URL,
   routes: [
     {
-      path: '/',
-      component: () => import('@/views/pages/Index'),
+      path: "/",
+      component: () => import("@/views/pages/Index"),
       children: [
         {
-          name: 'Lock',
-          path: 'lock',
-          component: () => import('@/views/pages/Lock'),
+          name: "Lock",
+          path: "lock",
+          component: () => import("@/views/pages/Lock")
         },
         {
-          name: 'Login',
-          path: '',
-          component: () => import('@/views/pages/Authentication/Login'),
+          name: "Login",
+          path: "",
+          component: () => import("@/views/pages/Authentication/Login")
         },
 
         {
-          name: 'Register',
-          path: 'register',
-          component: () => import('@/views/pages/Register'),
-        },
-      ],
+          name: "Register",
+          path: "register",
+          component: () => import("@/views/pages/Register")
+        }
+      ]
     },
     {
-      path: '/home',
-      component: () => import('@/views/container/Index'),
+      path: "/home",
+      component: () => import("@/views/container/Index"),
       // beforeEnter: AuthorizationFunction,
       children: [
-        // equips
+        // Dashboard
         {
-          name: 'Register',
-          path: 'register',
-          component: () => import('@/views/pages/Register'),
+          name: "Dashboard",
+          path: "dashboard",
+          // beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/Dashboard")
+        },
+        // Users
+        {
+          name: "Client",
+          path: "clients/clients",
+          // beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/Client/Client")
+        },
+        {
+          name: "ClientsForm",
+          path: "clients/form",
+          // beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/Client/ClientForm")
+        },
+        {
+          name: "Users",
+          path: "users/users",
+          // beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/Users/Users")
+        },
+        {
+          name: "UsersFrom",
+          path: "users/form",
+          // beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/Users/UsersFrom")
         },
 
         {
-          name: 'Inventory',
-          path: 'inventory/inventory',
+          name: "Register",
+          path: "register",
+          component: () => import("@/views/pages/Register")
+        },
+
+        {
+          name: "Inventory",
+          path: "inventory/inventory",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Inventory/Inventory'),
+          component: () => import("@/views/container/Inventory/Inventory")
         },
         {
-          name: 'InventoryForm',
-          path: 'inventory/form',
+          name: "InventoryForm",
+          path: "inventory/form",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Inventory/InventoryForm'),
+          component: () => import("@/views/container/Inventory/InventoryForm")
         },
         {
-          name: 'Orders',
-          path: 'Orders/Orders',
+          name: "Orders",
+          path: "Orders/Orders",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Orders/Orders'),
+          component: () => import("@/views/container/Orders/Orders")
         },
         {
-          name: 'OrdersForm',
-          path: 'orders/form',
+          name: "OrdersForm",
+          path: "orders/form",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Orders/OrdersForm'),
+          component: () => import("@/views/container/Orders/OrdersForm")
         },
+
         // services
         {
-          name: 'Services',
-          path: 'services/services',
+          name: "Vendors",
+          path: "Vendors/Vendors",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Servicess/Services'),
+          component: () => import("@/views/container/Vendors/Vendors")
         },
         {
-          name: 'ServicesForm',
-          path: 'services/form',
+          name: "VendorsForm",
+          path: "vendors/form",
           //   beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Servicess/ServicesForm'),
+          component: () => import("@/views/container/Vendors/VendorsForm")
         },
+
+
+
+
+
+
+
+
+
+
+
+
         // Requests
         {
-          name: 'Requests',
-          path: 'requests/requests',
+          name: "Requests",
+          path: "requests/requests",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Requests/Requests'),
+          component: () => import("@/views/container/Requests/Requests")
         },
         {
-          name: 'RequestsForm',
-          path: 'requests/form',
+          name: "RequestsForm",
+          path: "requests/form",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Requests/RequestsForm'),
+          component: () => import("@/views/container/Requests/RequestsForm")
         },
         // Orders
 
         // Reviews
         {
-          name: 'Reviews',
-          path: 'reviews/reviews',
+          name: "Reviews",
+          path: "reviews/reviews",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/ReviewServices/Reviews'),
+          component: () => import("@/views/container/ReviewServices/Reviews")
         },
         {
-          name: 'ReviewsForm',
-          path: 'reviews/form',
+          name: "ReviewsForm",
+          path: "reviews/form",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/ReviewServices/ReviewsForm'),
+          component: () =>
+            import("@/views/container/ReviewServices/ReviewsForm")
         },
         // Promotions
         {
-          name: 'Promotions',
-          path: 'promotions/promotions',
+          name: "Promotions",
+          path: "promotions/promotions",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Promotions/Promotions'),
+          component: () => import("@/views/container/Promotions/Promotions")
         },
         {
-          name: 'PromotionsForm',
-          path: 'promotions/form',
+          name: "PromotionsForm",
+          path: "promotions/form",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Promotions/PromotionsForm'),
-        },
-        // Dashboard
-        {
-          name: 'Dashboard',
-          path: 'dashboard',
-          // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Dashboard'),
-        },
-        // Users
-        {
-          name: 'Client',
-          path: 'clients/clients',
-          // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Client/Client'),
-        },        {
-          name: 'ClientsForm',
-          path: 'clients/form',
-          // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Client/ClientForm'),
-        },
-        {
-          name: 'Users',
-          path: 'users/users',
-          // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Users/Users'),
-        },
-        {
-          name: 'Suggestions',
-          path: 'suggestions/suggestions',
-          // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Suggestions/Suggestions'),
-        },
-        {
-          name: 'SuggestionsForm',
-          path: 'suggestions/suggestionsForm',
-          // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Suggestions/SuggestionsForm'),
+          component: () => import("@/views/container/Promotions/PromotionsForm")
         },
 
         {
-          name: 'Claims',
-          path: 'claims/claims',
+          name: "Suggestions",
+          path: "suggestions/suggestions",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Claims/Claims'),
+          component: () => import("@/views/container/Suggestions/Suggestions")
         },
         {
-          name: 'ClaimsForm',
-          path: 'claims/claimsForm',
+          name: "SuggestionsForm",
+          path: "suggestions/suggestionsForm",
           // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Claims/ClaimsForm'),
+          component: () =>
+            import("@/views/container/Suggestions/SuggestionsForm")
         },
 
         {
-          path: '/requests/request',
-          name: 'RequestDetails',
-          component: () => import('@/views/container/Claims/RequestDetails.vue')
+          name: "Claims",
+          path: "claims/claims",
+          // beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/Claims/Claims")
+        },
+        {
+          name: "ClaimsForm",
+          path: "claims/claimsForm",
+          // beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/Claims/ClaimsForm")
         },
 
         {
-          name: 'UsersFrom',
-          path: 'users/form',
-          // beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Users/UsersFrom'),
+          path: "/requests/request",
+          name: "RequestDetails",
+          component: () => import("@/views/container/Claims/RequestDetails.vue")
         },
+
         // Roles
         {
-          name: 'Roles',
-          path: 'roles/roles',
+          name: "Roles",
+          path: "roles/roles",
           //  beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Roles/Roles'),
+          component: () => import("@/views/container/Roles/Roles")
         },
         {
-          name: 'RolesForm',
-          path: 'roles/form',
+          name: "RolesForm",
+          path: "roles/form",
           //  beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Roles/RolesForm'),
+          component: () => import("@/views/container/Roles/RolesForm")
         },
         // Tipos de servicios
         {
-          name: 'TypeServices',
-          path: 'typeServices/typeServices',
+          name: "TypeServices",
+          path: "typeServices/typeServices",
           //  beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/TypeServices/TypeServices'),
+          component: () => import("@/views/container/TypeServices/TypeServices")
         },
         {
-          name: 'TypeServicesForm',
-          path: 'typeServices/form',
+          name: "TypeServicesForm",
+          path: "typeServices/form",
           //  beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/TypeServices/TypeServicesForm'),
+          component: () =>
+            import("@/views/container/TypeServices/TypeServicesForm")
         },
         // BLogs
         {
-          name: 'Blogs',
-          path: 'blogs/blogs',
+          name: "Blogs",
+          path: "blogs/blogs",
           //  beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Blogs/Blogs'),
+          component: () => import("@/views/container/Blogs/Blogs")
         },
         {
-          name: 'BlogsForm',
-          path: 'blogs/form',
+          name: "BlogsForm",
+          path: "blogs/form",
           //  beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Blogs/BlogsForm'),
+          component: () => import("@/views/container/Blogs/BlogsForm")
         },
         {
-          name: 'Publications',
-          path: 'publications/publications',
+          name: "Publications",
+          path: "publications/publications",
           //  beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Publications/Publications'),
+          component: () => import("@/views/container/Publications/Publications")
         },
         {
-          name: 'PublicationsForm',
-          path: 'publications/form',
-          //  beforeEnter: AuthorizationFunction,
-          component: () =>
-            import('@/views/container/Publications/PublicationsForm'),
-        },
-        {
-          name: 'Investigation',
-          path: 'investigation/investigation',
+          name: "PublicationsForm",
+          path: "publications/form",
           //  beforeEnter: AuthorizationFunction,
           component: () =>
-            import('@/views/container/Investigation/Investigation'),
+            import("@/views/container/Publications/PublicationsForm")
         },
         {
-          name: 'InvestigationForm',
-          path: 'investigation/form',
+          name: "Investigation",
+          path: "investigation/investigation",
           //  beforeEnter: AuthorizationFunction,
           component: () =>
-            import('@/views/container/Investigation/InvestigationForm'),
+            import("@/views/container/Investigation/Investigation")
         },
         {
-          name: 'Contact',
-          path: 'contact/contact',
+          name: "InvestigationForm",
+          path: "investigation/form",
           //  beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Contact/Contact'),
+          component: () =>
+            import("@/views/container/Investigation/InvestigationForm")
         },
         {
-          name: 'ContactForm',
-          path: 'contact/form',
+          name: "Contact",
+          path: "contact/contact",
+          //  beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/Contact/Contact")
+        },
+        {
+          name: "ContactForm",
+          path: "contact/form",
           //   beforeEnter: AuthorizationFunction,
-          component: () => import('@/views/container/Contact/ContactForm'),
+          component: () => import("@/views/container/Contact/ContactForm")
         },
 
         // Kitchen
         {
-          name: 'Kitchens',
-          path: 'kitchens/kitchens',
-          component: () => import('@/views/container/Kitchens/Kitchens'),
+          name: "Kitchens",
+          path: "kitchens/kitchens",
+          component: () => import("@/views/container/Kitchens/Kitchens")
         },
         {
-          name: 'Kitchens-Edit',
-          path: 'kitchens/kitchens-edit',
+          name: "Kitchens-Edit",
+          path: "kitchens/kitchens-edit",
           component: () =>
-            import('@/views/container/Kitchens/Kitchen-Edit/Kitchen-Edit'),
+            import("@/views/container/Kitchens/Kitchen-Edit/Kitchen-Edit")
         },
         {
-          name: 'Kitchens-Show',
-          path: 'kitchens/kitchens-show',
+          name: "Kitchens-Show",
+          path: "kitchens/kitchens-show",
           component: () =>
-            import('@/views/container/Kitchens/Kitchen-Show/Kitchen-Show'),
+            import("@/views/container/Kitchens/Kitchen-Show/Kitchen-Show")
         },
         // Kitchen
         {
-          name: 'Vendors',
-          path: 'vendors/vendors',
-          component: () => import('@/views/container/Vendors/Vendors'),
-        },
-      ],
+          name: "Vendors",
+          path: "vendors/vendors",
+          component: () => import("@/views/container/Vendors/Vendors")
+        }
+      ]
     },
     {
-      path: '*',
-      component: () => import('@/views/pages/Index'),
+      path: "*",
+      component: () => import("@/views/pages/Index"),
       children: [
         {
-          name: '404 Error',
-          path: '',
-          component: () => import('@/views/pages/Error'),
-        },
-      ],
-    },
-  ],
-})
+          name: "404 Error",
+          path: "",
+          component: () => import("@/views/pages/Error")
+        }
+      ]
+    }
+  ]
+});

@@ -91,6 +91,9 @@
             </v-footer>
           </template>
         </v-data-table>
+        <v-btn color="success" class="mr-0" @click="confirmOrder">
+          Confirmar Pedido
+        </v-btn>
       </base-material-card>
     </v-row>
   </v-container>
@@ -187,6 +190,37 @@ export default {
       } else {
         this.dialog = true;
         this.message = result.message.text;
+      }
+    },
+
+    async confirmOrder() {
+      try {
+        // Aquí puedes agregar la lógica para recolectar la información del pedido
+        const orderData = {
+          client_id: this.selectedClient,
+          items: this.selectedItems, // Asegúrate de tener los productos seleccionados en 'selectedItems'
+          total_price: this.totalPrice, // Calcula el precio total del pedido
+          // Otros datos necesarios
+        };
+
+        // Llama a tu API para enviar los datos del pedido
+        const response = await apiHttp('post', '/api/v1/orders', orderData);
+
+        if (response.status === 201) {
+          this.snackbar = true;
+          this.message = 'Pedido realizado exitosamente';
+
+          // Redirige al usuario a la tabla de pedidos o actualiza la tabla
+          setTimeout(() => {
+            this.$router.push({ name: 'Orders' });
+          }, 2000);
+        } else {
+          this.snackbar = true;
+          this.message = 'Hubo un error al realizar el pedido';
+        }
+      } catch (error) {
+        this.snackbar = true;
+        this.message = 'Ocurrió un error al conectarse con el servidor';
       }
     },
 

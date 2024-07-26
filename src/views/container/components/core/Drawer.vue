@@ -178,6 +178,12 @@
         {
           group: '/home',
           icon: 'mdi-plus-network',
+          title: 'Vendedores',
+          to: '/home/Vendors/Vendors',
+        },
+        {
+          group: '/home',
+          icon: 'mdi-plus-network',
           title: 'Inventario',
           to: '/home/inventory/inventory',
         },

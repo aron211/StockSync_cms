@@ -131,6 +131,23 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
+
+      <v-card-text style="height: 100px; position: relative">
+        <v-fab-transition>
+          <v-btn
+            fab
+            dark
+            large
+            color="grenndark"
+            fixed
+            right
+            bottom
+            @click="create"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </v-fab-transition>
+      </v-card-text>
     </base-material-card>
   </v-container>
 </template>
@@ -153,24 +170,16 @@
           value: 'codigo',
         },
         {
-          text: 'Nombre',
+          text: 'Nombre del cliente',
           value: 'name',
         },
         {
-          text: 'Marca',
-          value: 'marca',
+          text: 'Rif',
+          value: 'rif',
         },
         {
-          text: 'cantidad',
-          value: 'cant',
-        },
-        {
-          text: 'Precio al Detal',
-          value: 'priceD',
-        },
-        {
-          text: 'Precio al Mayor',
-          value: 'priceM',
+          text: 'Monto total',
+          value: 'priceTotal',
         },
         {
           sortable: false,
@@ -187,16 +196,16 @@
     },
     methods: {
       data: async function () {
-        let result
-        result = await inventoryGetList()
-        if (result.status==200) {
-         console.log(result.data)
-         this.items = result.data
-        } else {
+        // let result
+        // result = await inventoryGetList()
+        // if (result.status==200) {
+        //  console.log(result.data)
+        //  this.items = result.data
+        // } else {
         
-         this.dialog = true;
-         this.message = result.message.text;
-        }
+        //  this.dialog = true;
+        //  this.message = result.message.text;
+        // }
 
       },
       create () {
