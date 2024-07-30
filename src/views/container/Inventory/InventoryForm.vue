@@ -13,10 +13,9 @@
             slider-color="white"
           >
             <v-tab class="mr-3">
-              <v-icon class="mr-2">
-                mdi-account-key
-              </v-icon>
-              {{ getTitleButton }}
+              <v-icon class="mr-2">mdi-account-key</v-icon>
+              <!-- {{ getTitleButton }} -->
+              Clientes
             </v-tab>
           </v-tabs>
         </template>
@@ -37,62 +36,68 @@
             </v-btn>
           </v-fab-transition>
         </v-card-text>
-        <v-tabs-items
-          v-model="tabs"
-          class="transparent"
-        >
-          <v-tab-item :kei="0">
-            <v-form
-              ref="form"
-              v-model="valid"
-              lazy-validation
-            >
+
+        <v-tabs-items v-model="tabs" class="transparent">
+          <v-tab-item :key="0">
+            <v-form ref="form" lazy-validation>
               <v-container class="py-0">
                 <v-row>
-                  <v-col cols="7">
+                  
+                  <v-col cols="12" md="6">
                     <v-text-field
-                      v-model="invesData.name"
-                      :label="$t('inventory.Name')"
+                      v-model="client.name"
+                      label="Nombre"
                       class="purple-input"
-                      :readonly="option === 2 ? true : false"
+                      :readonly="option === 2"
+                      :rules="[rules.required]"
                     />
                   </v-col>
-                  <v-col cols="7">
+                  <v-col cols="12" md="6">
                     <v-text-field
-                      v-model="invesData.quantity"
-                      :label="$t('inventory.quantity')"
+                      v-model="client.rif"
+                      label="Rif"
                       class="purple-input"
-                      :readonly="option === 2 ? true : false"
+                      :readonly="option === 2"
                     />
                   </v-col>
-
-                  <v-col cols="7">
-                    <v-textarea
-                      v-model="invesData.description"
-                      :label="$t('inventory.description')"
-                      class="purple-input"
-                      :readonly="option === 2 ? true : false"
-                    />
-                  </v-col>
-                  <v-col cols="7">
+                  <v-col  :hidden="option==3" cols="12" md="6">
                     <v-text-field
-                      v-model="inventoryData.status"
-                      :label="$t('inventory.status')"
+                      v-model="client.codigo"
+                      label="Codigo"
                       class="purple-input"
-                      :readonly="option === 2 ? true : false"
+                      :readonly="option === 2 || option === 3"
+                      :rules="[rules.emailRules]"
                     />
                   </v-col>
-                  <v-col
-                    cols="12"
-                    class="text-right"
-                  >
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="client.address"
+                      label="Direccion"
+                      class="purple-input"
+                      :readonly="option === 2"
+                      :rules="[rules.required]"
+                    />
+                  </v-col>
+                  <v-col cols="12" md="6">
+                   
+                        <v-text-field
+                          v-model="client.phone"
+                          color="secondary"
+                          label="Teléfono"
+                          :rules="[rules.required]"
+                          :readonly="option === 2"
+                        />
+                      
+                  </v-col>
+                  <v-col cols="12" class="text-right">
                     <v-btn
                       v-if="option !== 2"
                       color="success"
                       class="mr-0"
                       @click="submit"
                     >
-                      {{ getTitleButton }}
+                      <!-- {{ getTitleButton }} -->
+                      Agregar Cliente
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -126,77 +131,111 @@
   </v-container>
 </template>
 
+
 <script>
   import i18n from '@/i18n'
-  import { createinventario, updateinventario } from '../../../api/modules/inventario'
+  import {createClient,updateUser} from '../../../api/modules/client'
+
   export default {
 
     data: () => ({
       tabs: 0,
       option: 0,
+      setTimeout:0,
+      show1: false,
       title: '',
       snackbar: '',
       message: '',
-      valid: true,
-      invesData: {
+     
+      user: {
         id: '',
         name: '',
-        quantity: '',
-        description: '',
-        status: '',
-
+        codigo: '',
+        rif: '',
+        password: '',
+        role: '',
+        urlAvatar: '',
+        reference:'',
+        address:'',
+        phone:'',
+        code:'',
+        createdAt:'', 
+        updatedAt:''
+      },
+      client: {
+        id: "",
+        codigo: "",
+        name: "",
+        rif: "",
+        address: "",
+        phone: "",
+        createdAt: "",
+        updatedAt: ""
       },
       rules: {
-
-        required: value => !!value || 'Debe ingresar Texto.',
-        min: v => v.length >= 10 || 'El titulo debe tener un mínimo 10 caracteres',
+        required: value => !!value || 'este dato es obligatorio.',
+        min: v => v.length >= 6 || 'Mínimo 6 caracteres',
+      //   emailRules: v => /.+@.+\..+/.test(v) || 'el correo deber ser valido. Ejemplo@email.com',
+        // passwordMatch: v => v === this.user.password || 'Las contraseñas deben coincidir'
+      
+        // emailMatch: () => "El correo y la contraseña no coinciden"
       },
+      
 
     }),
     computed: {
       getTitle () {
-        if (this.option === 1) return i18n.t('inventory.create')
-        else if (this.option === 2) return i18n.t('inventory.show')
-        else if (this.option === 3) return i18n.t('inventory.edit')
-        else return i18n.t('inventory.head')
+        if (this.option === 1) return i18n.t('users.create')
+        else if (this.option === 2) return i18n.t('users.show')
+        else if (this.option === 3) return i18n.t('users.edit')
+        else return i18n.t('users.head')
       },
       getTitleButton () {
         if (this.option === 1) return i18n.t('crud.create')
         else if (this.option === 2) return i18n.t('crud.show')
         else if (this.option === 3) return i18n.t('crud.edit')
-        else return i18n.t('inventory.head')
+        else return i18n.t('users.head')
       },
     },
     mounted () {
       this.initialize()
     },
+
     methods: {
       initialize () {
         this.option = this.$route.params.option
         if (this.option === 3 || this.option === 2) {
-          this.invesData = this.$route.params.invesData
+          this.client = this.$route.params.clientData;
         }
+       
+         
       },
-      async submit () {
+
+     async  submit () {
         if (this.option === 1) {
           if (this.$refs.form.validate()) {
 
-            let inventario = {
-              name: this.invesData.name,
-              quantity: this.invesData.quantity,
-              description: this.invesData.description,
-
+            let client = {
+              codigo: this.client.codigo,
+              name: this.client.name,
+              rif: this.client.rif,
+              address: this.client.address,
+              phone:this.client.phone,
             }
-            console.log("🚀 ~ submit ~ inventario:", inventario)
-            inventario = await createinventario(inventario)
-
-            if (inventario.status == 201) {
+          
+            const result = await createClient(client)
+           
+            
+            if (result.status==201) {
+            
               this.snackbar = true
               this.message = 'Registro exitoso'
+              
               setTimeout(() => {
-                this.$router.push({ name: 'Inventory' })
+                this.$router.push({ name: 'Client' })
               }, 2000)
             } else {
+
               this.snackbar = true
               this.message = 'Hubo un error durante el registro'
               setTimeout(() => {
@@ -211,23 +250,25 @@
               this.snackbar = false
             }, 1000)
           }
-        }    
+        }  
         if (this.option === 3) {
           if (this.$refs.form.validate()) {
 
-            let inventario = {
-              id: this.invesData.id,
-              name: this.invesData.name,
-              quantity: this.invesData.quantity,
-              description: this.invesData.description,
-            }
-            console.log('inventario que se envia ', inventario)
-            inventario = await updateinventario(inventario)
-            if (inventario != null) {
+            let id = this.client.id
+
+            let client = {
+          name: this.client.name,
+          codigo: this.client.codigo,
+          address: this.client.address,
+          phone: this.client.phone,
+        }
+           
+            user = await updateUser(id,client)
+            if (user.status == 200) {
               this.snackbar = true
               this.message = 'Actualizacion exitosa'
               setTimeout(() => {
-                this.$router.push({ name: 'Inventory' })
+                this.$router.push({ name: 'Client' })
               }, 2000)
             } else {
               this.snackbar = true

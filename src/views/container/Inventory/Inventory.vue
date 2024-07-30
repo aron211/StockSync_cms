@@ -240,7 +240,7 @@
       },
       create () {
         this.$router.push({
-          name: 'inventoryForm',
+          name: 'InventoryForm',
           params: {
             option: 1, // option 1 to create
           },
