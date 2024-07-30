@@ -12,8 +12,8 @@
               <v-icon class="mr-2">
                 mdi-account-key
               </v-icon>
-              <!-- {{ getTitleButton }} -->
-              Realizar nuevo pedido
+              {{ getTitleButton }}
+              
             </v-tab>
           </v-tabs>
         </template>
@@ -34,10 +34,32 @@
             </v-btn>
           </v-fab-transition>
         </v-card-text>
+         <!-- Table with details of orders created -->
+         <v-data-table
+          :headers="orderHeaders"
+          :items="selectedItems"
+          class="elevation-1"
+          v-if="option === 2"
+        >
+          <template v-slot:item.total="{ item }">
+            {{ (item.priceD * item.quantity).toFixed(2) }}
+          </template>
+          <template v-slot:footer>
+            <v-footer>
+              <v-col class="text-left">
+                <strong>Fecha: {{ formatDate(ordersData.createdAt) }}</strong>
+              </v-col>
+              <v-col class="text-right">
+                <strong>Total: {{ totalOrderPrice.toFixed(2) }} bs</strong>
+              </v-col>
+            </v-footer>
+          </template>
+        </v-data-table>
         <v-divider class="mt-5" />
         <v-autocomplete
           v-model="searchTerm"
           :items="items"
+          v-if="option !== 2"
           item-value="codigo"
           item-text="name"
           label="Buscar producto"
@@ -46,6 +68,7 @@
         <!-- Table inventary -->
         <v-divider class="mt-10" />
         <v-data-table
+          v-if="option !== 2"
           :headers="headers"
           :items="filteredItems"
           :search.sync="search"
@@ -54,7 +77,7 @@
           multi-sort
           class="elevation-1"
         >
-        <template v-slot:item.actions="{ item }">
+          <template v-slot:item.actions="{ item }">
             <v-checkbox
               v-model="item.selected"
               :disabled="item.cant <= 0"
@@ -67,18 +90,24 @@
               :max="item.cant"
               label="Cantidad"
               v-if="item.selected"
-              :rules="[v => (item.quantity <= item.cant) || `Maximo disponible: ${item.cant}`]"
+              :rules="[
+                v =>
+                  item.quantity <= item.cant ||
+                  `Maximo disponible: ${item.cant}`
+              ]"
               @input="validateQuantity(item)"
               :error-messages="item.errorMessages"
             ></v-text-field>
           </template>
         </v-data-table>
         <v-divider class="mt-10" />
-        <!-- Table orders with products selecteds -->
+        
+        <!-- Table with products selecteds to create new order -->
         <v-data-table
           :headers="orderHeaders"
           :items="selectedItems"
           class="elevation-1"
+          v-if="option !== 2"
         >
           <template v-slot:item.total="{ item }">
             {{ (item.priceD * item.quantity).toFixed(2) }}
@@ -91,9 +120,30 @@
             </v-footer>
           </template>
         </v-data-table>
-        <v-btn color="success" class="mr-0" @click="confirmOrder">
+        <v-btn
+          color="success"
+          class="mr-0"
+          @click="confirmOrder"
+          v-if="option !== 2"
+        >
           Confirmar Pedido
         </v-btn>
+        <div class="text-center">
+          <v-snackbar v-model="snackbar" :timeout="timeout" color="#75B768">
+            {{ message }}
+
+            <template v-slot:action="{ attrs }">
+              <v-btn
+                color="white"
+                text
+                v-bind="attrs"
+                @click="snackbar = false"
+              >
+                Cerrar
+              </v-btn>
+            </template>
+          </v-snackbar>
+        </div>
       </base-material-card>
     </v-row>
   </v-container>
@@ -101,12 +151,13 @@
 
 <script>
 import i18n from "@/i18n";
-import { createorder, updateorder } from "../../../api/modules/orders";
+import { createorder, GetListorder } from "../../../api/modules/orders";
 import { inventoryGetList } from "../../../api/modules/inventory";
 export default {
   data: () => ({
     tabs: 0,
     option: 0,
+    timeout: 0,
     title: "",
     snackbar: "",
     message: "",
@@ -114,16 +165,18 @@ export default {
       id: "",
       type: "",
       amount: "",
-      status: ""
+      status: "",
+      products: []
     },
+    selectedItems: [],
     headers: [
       {
         text: "Código",
         value: "codigo"
       },
       {
-        text: "Nombre",
-        value: "name"
+        text: "Nombre del",
+        value: "product.name"
       },
       {
         text: "Marca",
@@ -142,44 +195,75 @@ export default {
         value: "priceM"
       },
       {
-          sortable: false,
-          text: 'Acciones',
-          value: 'actions',
-        },
+        sortable: false,
+        text: "Acciones",
+        value: "actions"
+      }
     ],
     items: [],
     filteredItems: [],
-    searchTerm: '',
+    searchTerm: "",
     orderHeaders: [
       { text: "Nombre", value: "name" },
       { text: "Precio Unitario", value: "priceD" },
       { text: "Cantidad", value: "quantity" },
-      { text: "Precio Total", value: "total" },
+      { text: "Precio Total", value: "total" }
     ],
     selectedItems: [],
-    maxQuantityError: ''
+    maxQuantityError: "",
+    clientID: localStorage.getItem("id") || "", 
+    clientName: localStorage.getItem("name") || ""
   }),
   computed: {
     getTitle() {
-      if (this.option === 1) return i18n.t("orders.create");
-      else if (this.option === 2) return i18n.t("orders.show");
+      if (this.option === 1) return "Crear nuevo pedido";
+      else if (this.option === 2) return "Ver detalles del pedido";
       else if (this.option === 3) return i18n.t("orders.edit");
       else return i18n.t("orders.head");
     },
     getTitleButton() {
-      if (this.option === 1) return i18n.t("crud.create");
-      else if (this.option === 2) return i18n.t("crud.show");
+      if (this.option === 1) return "Crear nuevo pedido";
+      else if (this.option === 2) return "Ver detalles del pedido";
       else if (this.option === 3) return i18n.t("crud.edit");
       else return i18n.t("orders.head");
     },
     totalOrderPrice() {
-      return this.selectedItems.reduce((sum, item) => sum + item.priceD * item.quantity, 0);
-    }
+      return this.selectedItems.reduce(
+        (sum, item) => sum + item.priceD * item.quantity,
+        0
+      );
+    },
+
   },
   mounted() {
-    this.initialize(), this.data();
+    this.initialize(), 
+    this.data();
   },
   methods: {
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const formattedDate = date.toISOString().split("T")[0];
+      const formattedTime = date.toTimeString().split(" ")[0];
+      return `${formattedDate}, ${formattedTime}`;
+    },
+    initialize() {
+      this.option = this.$route.params.option;
+      if (this.option === 3 || this.option === 2) {
+        this.ordersData = this.$route.params.ordersData;
+        console.log('ordersData:', this.ordersData);
+        this.selectedItems = this.ordersData.orderProducts.map(orderProduct => ({
+          id: orderProduct.product.id,
+          codigo: orderProduct.product.codigo,
+          name: orderProduct.product.name,
+          marca: orderProduct.product.marca,
+          cant: orderProduct.product.cant,
+          priceD: orderProduct.product.priceD,
+          priceM: orderProduct.product.priceM,
+          quantity: orderProduct.quantity
+    }));
+        console.log('selectedItems:', this.selectedItems);
+      }
+    },
     data: async function() {
       let result;
       result = await inventoryGetList();
@@ -194,136 +278,74 @@ export default {
     },
 
     async confirmOrder() {
+      console.log("confirmOrder called");
+      if (this.selectedItems.length === 0) {
+        this.snackbar = true;
+        this.message = "No hay productos seleccionados para el pedido";
+        return;
+      }
       try {
-        // Aquí puedes agregar la lógica para recolectar la información del pedido
         const orderData = {
-          client_id: this.selectedClient,
-          items: this.selectedItems, // Asegúrate de tener los productos seleccionados en 'selectedItems'
-          total_price: this.totalPrice, // Calcula el precio total del pedido
-          // Otros datos necesarios
+          codigo: "11",
+          nameCli: this.clientName,
+          priceTotal: this.totalOrderPrice.toString(),
+          userId: this.clientID,
+          products: this.selectedItems.map(item => ({
+            productId: item.id,
+            quantity: item.quantity
+          }))
         };
 
-        // Llama a tu API para enviar los datos del pedido
-        const response = await apiHttp('post', '/api/v1/orders', orderData);
+        console.log("Sending order data:", orderData);
 
+        const response = await createorder(orderData);
+        console.log("API response:", response);
         if (response.status === 201) {
+          console.log("order enviada exitosamente");
           this.snackbar = true;
-          this.message = 'Pedido realizado exitosamente';
+          this.message = "Pedido realizado exitosamente";
 
-          // Redirige al usuario a la tabla de pedidos o actualiza la tabla
           setTimeout(() => {
-            this.$router.push({ name: 'Orders' });
-          }, 2000);
+            this.$router.push({ name: "Orders" });
+          }, 2500);
         } else {
+          console.log("Error in create order");
           this.snackbar = true;
-          this.message = 'Hubo un error al realizar el pedido';
+          this.message = "Hubo un error al realizar el pedido";
         }
       } catch (error) {
+        console.error("Error en confirmOrder:", error);
         this.snackbar = true;
-        this.message = 'Ocurrió un error al conectarse con el servidor';
+        this.message = "Ocurrió un error al conectarse con el servidor";
       }
     },
-
-    initialize() {
-      this.option = this.$route.params.option;
-      if (this.option === 3 || this.option === 2) {
-        this.ordersData = this.$route.params.ordersData;
-      }
-    },
-    async submit() {
-      if (this.option === 1) {
-        if (this.$refs.form.validate()) {
-          let orders = {
-            id: this.ordersData.id,
-            type: this.ordersData.type,
-            amount: this.ordersData.amount
-          };
-          console.log("🚀 ~ submit ~ order:", orders);
-          orders = await createorder(orders);
-
-          if (orders != null) {
-            this.snackbar = true;
-            this.message = "Registro exitoso";
-            setTimeout(() => {
-              this.$router.push({ name: "orders" });
-            }, 2000);
-          } else {
-            this.snackbar = true;
-            this.message = "Hubo un error durante el registro";
-            setTimeout(() => {
-              this.snackbar = false;
-            }, 1000);
-          }
-        } else {
-          this.snackbar = true;
-          this.message = "Debe llenar todos los campos requeridos";
-          setTimeout(() => {
-            this.snackbar = false;
-          }, 1000);
-        }
-      }
-      if (this.option === 3) {
-        if (this.$refs.form.validate()) {
-          let orders = {
-            id: this.ordersData.id,
-            type: this.ordersData.type,
-            amount: this.ordersData.amount
-          };
-          console.log("orden que se envia ", orders);
-          orders = await updateorder(orders);
-          if (orders != null) {
-            this.snackbar = true;
-            this.message = "Actualizacion exitosa";
-            setTimeout(() => {
-              this.$router.push({ name: "orders" });
-            }, 2000);
-          } else {
-            this.snackbar = true;
-            this.message = "Hubo un error durante la actualizacion";
-            setTimeout(() => {
-              this.snackbar = false;
-            }, 1000);
-          }
-        } else {
-          this.snackbar = true;
-          this.message = "Debe llenar todos los campos requeridos";
-          setTimeout(() => {
-            this.snackbar = false;
-          }, 1000);
-        }
-      }
-    },
+  
     toggleProduct(item) {
       if (item.selected) {
         this.selectedItems.push({ ...item, quantity: item.quantity || 1 });
       } else {
-        this.selectedItems = this.selectedItems.filter(selectedItem => selectedItem.codigo !== item.codigo);
+        this.selectedItems = this.selectedItems.filter(
+          selectedItem => selectedItem.codigo !== item.codigo
+        );
       }
     },
-    // updateQuantity(item) {
-    //   if (item.selected) {
-    //     const selectedItem = this.selectedItems.find(selectedItem => selectedItem.codigo === item.codigo);
-    //     if (selectedItem) {
-    //       selectedItem.quantity = item.quantity;
-    //     }
-    //   }
-    // }
     validateQuantity(item) {
-       const maxQuantity = item.cant;
+      const maxQuantity = item.cant;
       if (item.quantity > maxQuantity) {
         item.errorMessages = [`Máximo disponible: ${maxQuantity}`];
-        item.quantity = maxQuantity; // Ajusta la cantidad a la máxima disponible
+        item.quantity = maxQuantity; 
       } else {
         item.errorMessages = [];
       }
 
-      // Asegúrate de que la cantidad no sea mayor que el máximo permitido
       if (item.quantity > maxQuantity) {
         item.quantity = maxQuantity;
       }
 
       if (item.selected) {
-        const selectedItem = this.selectedItems.find(selectedItem => selectedItem.codigo === item.codigo);
+        const selectedItem = this.selectedItems.find(
+          selectedItem => selectedItem.codigo === item.codigo
+        );
         if (selectedItem) {
           selectedItem.quantity = item.quantity;
         }
@@ -333,10 +355,10 @@ export default {
 
   watch: {
     searchTerm(val) {
-      console.log('Search Term:', val);
+      console.log("Search Term:", val);
       if (val === undefined) {
         this.filteredItems = this.items;
-      } else if (val.trim() === '') {
+      } else if (val.trim() === "") {
         this.filteredItems = this.items;
       } else {
         this.filteredItems = this.items.filter(
@@ -345,7 +367,7 @@ export default {
             item.codigo.toLowerCase().includes(val.toLowerCase())
         );
       }
-      console.log('Filtered Items:', this.filteredItems);
+      console.log("Filtered Items:", this.filteredItems);
     }
   }
 };

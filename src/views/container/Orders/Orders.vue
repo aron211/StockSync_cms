@@ -1,8 +1,5 @@
 <template>
-  <v-container
-    id="data-tables"
-    tag="section"
-  >
+  <v-container id="data-tables" tag="section">
     <base-material-card
       color="greenligth"
       icon="mdi-format-page-break"
@@ -12,7 +9,7 @@
       <template v-slot:after-heading>
         <div class="display-2 font-weight-light">
           <!-- {{ $t("orders.head") }} -->
-            Pedidos
+          Pedidos
         </div>
       </template>
 
@@ -30,13 +27,19 @@
 
       <v-data-table
         :headers="headers"
-        :items="items"
+        :items="filteredItems"
         :search.sync="search"
         :sort-by="['id', 'titulo']"
         :sort-desc="[false, true]"
         multi-sort
         class="elevation-1"
       >
+        <template v-slot:[`item.priceTotal`]="{ item }">
+          {{ formatPrice(item.priceTotal) }}
+        </template>
+        <template v-slot:[`item.createdAt`]="{ item }">
+          {{ formatDate(item.createdAt) }}
+        </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn
             :key="1"
@@ -46,12 +49,9 @@
             x-small
             @click="show(item)"
           >
-            <v-icon
-              small
-              v-text="'mdi-eye'"
-            />
+            <v-icon small v-text="'mdi-eye'" />
           </v-btn>
-          <v-btn
+          <!-- <v-btn
             :key="2"
             color="four"
             fab
@@ -59,11 +59,8 @@
             x-small
             @click="edit(item)"
           >
-            <v-icon
-              small
-              v-text="'mdi-check'"
-            />
-          </v-btn>
+            <v-icon small v-text="'mdi-check'" />
+          </v-btn> -->
           <!--<v-btn
             :key="3"
             color="primary"
@@ -81,56 +78,33 @@
       </v-data-table>
 
       <div class="text-center">
-        <v-snackbar
-          v-model="snackbar"
-          :timeout="timeout"
-          color="#75B768"
-        >
+        <v-snackbar v-model="snackbar" :timeout="timeout" color="#75B768">
           {{ message }}
 
           <template v-slot:action="{ attrs }">
-            <v-btn
-              color="white"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
+            <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
               Close
             </v-btn>
           </template>
         </v-snackbar>
       </div>
-      <v-dialog
-        v-model="dialogDelete"
-        persistent
-        max-width="500px"
-      >
+      <!-- <v-dialog v-model="dialogDelete" persistent max-width="500px">
         <v-card>
-          <v-card-title
-            class="text-h5"
-          >
+          <v-card-title class="text-h5">
             Estas seguro que deseas eliminar esta orden?
           </v-card-title>
           <v-card-actions>
             <v-spacer />
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="closeDelete"
-            >
+            <v-btn color="blue darken-1" text @click="closeDelete">
               Cancelar
             </v-btn>
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="deleteItemConfirm"
-            >
+            <v-btn color="blue darken-1" text @click="deleteItemConfirm">
               OK
             </v-btn>
             <v-spacer />
           </v-card-actions>
         </v-card>
-      </v-dialog>
+      </v-dialog> -->
 
       <v-card-text style="height: 100px; position: relative">
         <v-fab-transition>
@@ -152,115 +126,133 @@
   </v-container>
 </template>
 
-    <script>
-  import i18n from '@/i18n'
-  import { inventoryGetList} from '../../../api/modules/inventory'
-  export default {
-    name: 'DashboardDataTables',
-    data: () => ({
-      dialogDelete: false,
-      snackbar: false,
-      message: '',
-      hidden: false,
-      idord: null,
-      headers: [
-       
-        {
-          text: 'Código',
-          value: 'codigo',
-        },
-        {
-          text: 'Nombre del cliente',
-          value: 'name',
-        },
-        {
-          text: 'Rif',
-          value: 'rif',
-        },
-        {
-          text: 'Monto total',
-          value: 'priceTotal',
-        },
-        {
-          sortable: false,
-          text: 'Acciones',
-          value: 'actions',
-        },
-      ],
-      items: [],
-      search: undefined,
-
-    }),
-    async mounted () {
-      this.data()
+<script>
+import i18n from "@/i18n";
+import { GetListorder } from "../../../api/modules/orders";
+export default {
+  name: "DashboardDataTables",
+  data: () => ({
+    // dialogDelete: false,
+    snackbar: false,
+    message: "",
+    hidden: false,
+    timeout: 0,
+    idord: null,
+    headers: [
+      // {
+      //   text: 'Código',
+      //   value: 'codigo',
+      // },
+      {
+        text: "Nombre del cliente",
+        value: "user.name"
+      },
+      {
+        text: "Rif",
+        value: "user.lastname"
+      },
+      {
+        text: "Monto total",
+        value: "priceTotal"
+      },
+      {
+        text: "Fecha",
+        value: "createdAt"
+      },
+      {
+        sortable: false,
+        text: "Acciones",
+        value: "actions"
+      }
+    ],
+    items: [],
+    search: undefined
+  }),
+  async mounted() {
+    this.data();
+  },
+  computed: {
+    filteredItems() {
+      const loggedUserId = localStorage.getItem("id");
+      console.log("idUserLogged: ", loggedUserId);
+      return this.items.filter(item => item.user.id === loggedUserId);
+    }
+  },
+  mounted() {
+    this.data();
+  },
+  methods: {
+    data: async function() {
+      let result;
+      result = await GetListorder();
+      if (result.status == 200) {
+        console.log(result.data);
+        this.items = result.data;
+      } else {
+        this.dialog = true;
+        this.message = result.message.text;
+      }
     },
-    methods: {
-      data: async function () {
-        // let result
-        // result = await inventoryGetList()
-        // if (result.status==200) {
-        //  console.log(result.data)
-        //  this.items = result.data
-        // } else {
-        
-        //  this.dialog = true;
-        //  this.message = result.message.text;
-        // }
-
-      },
-      create () {
-        this.$router.push({
-          name: 'OrdersForm',
-          params: {
-            option: 1, // option 1 to create
-          },
-        })
-      },
-      show (item) {
-        console.log(item)
-        this.$router.push({
-          name: 'OrdersForm',
-          params: {
-            option: 2, // option 2 to show
-            ordersData: item,
-          },
-        })
-      },
-      deleteorder (item) {
-        this.idord = item.id
-        this.dialogDelete = true
-      },
-      closeDelete () {
-        this.dialogDelete = false
-      },
-
-      deleteOrderConfirm () {
-        this.dialogDelete = false
-      },
-      async deleteOrderConfirm () {
-        let result
-        result = await deleteorder(this.idord)
-        console.log("🚀 ~ deleteItemConfirm ~ result:", result)
-        if (result === 'OK') {
-          this.snackbar = true
-          this.message = 'Eliminación exitosa'
-          this.data()
-          this.dialogDelete = false
-          setTimeout(() => {
-            this.$router.push({ name: 'Order' })
-          }, 1000)
-        } else {
-          this.snackbar = true
-          this.message = 'ocurrio un error al eliminar la orden'
-          setTimeout(() => {
-            this.snackbar = false
-          }, 1000)
+    formatDate(dateString) {
+      const date = new Date(dateString);
+      const formattedDate = date.toISOString().split("T")[0];
+      const formattedTime = date.toTimeString().split(" ")[0];
+      return `${formattedDate}, ${formattedTime}`;
+    },
+    formatPrice(price) {
+      return parseFloat(price).toFixed(2);
+    },
+    create() {
+      this.$router.push({
+        name: "OrdersForm",
+        params: {
+          option: 1 // option 1 to create
         }
-      },
+      });
     },
+    show(item) {
+      console.log(item);
+      this.$router.push({
+        name: "OrdersForm",
+        params: {
+          option: 2, // option 2 to show
+          ordersData: item
+        }
+      });
+    },
+    // deleteorder(item) {
+    //   this.idord = item.id;
+    //   this.dialogDelete = true;
+    // },
+    // closeDelete() {
+    //   this.dialogDelete = false;
+    // },
+
+    // deleteOrderConfirm() {
+    //   this.dialogDelete = false;
+    // },
+    // async deleteOrderConfirm() {
+    //   let result;
+    //   result = await deleteorder(this.idord);
+    //   console.log("🚀 ~ deleteItemConfirm ~ result:", result);
+    //   if (result === "OK") {
+    //     this.snackbar = true;
+    //     this.message = "Eliminación exitosa";
+    //     this.data();
+    //     this.dialogDelete = false;
+    //     setTimeout(() => {
+    //       this.$router.push({ name: "Order" });
+    //     }, 1000);
+    //   } else {
+    //     this.snackbar = true;
+    //     this.message = "ocurrio un error al eliminar la orden";
+    //     setTimeout(() => {
+    //       this.snackbar = false;
+    //     }, 1000);
+    //   }
+    // }
   }
-  </script>
+};
+</script>
 
-  <style>
-
-  </style>
+<style></style>
