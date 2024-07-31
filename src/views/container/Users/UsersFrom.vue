@@ -37,7 +37,16 @@
           <v-tab-item :key="0">
             <v-form ref="form" lazy-validation>
               <v-col cols="12" md="6" :hidden="option == 2 || option === 3">
-                <v-autocomplete  
+                <v-select
+                  v-model="selectedUserType"
+                  :items="userTypes"
+                  label="¿Qué tipo de usuario quiere agregar?"
+                  class="purple-input"
+                  outlined
+                />
+                <!-- search client register -->
+                <v-autocomplete
+                v-if="selectedUserType === 'Cliente'"
                   v-model="selectedClient"
                   :items="itemsClient"
                   label="Seleciona el cliente a agregar"
@@ -45,12 +54,34 @@
                   item-value="id"
                   class="purple-input"
                   outlined
-                  :readonly="option === 2 || option === 2"
                   @change="updateClientData"
                 />
+                <!-- search vendor register -->
+                <v-autocomplete
+                v-if="selectedUserType === 'Vendedor'"
+                  v-model="selectedVendor"
+                  :items="itemsVendor"
+                  label="Seleciona el Vendedor a agregar"
+                  item-text="name"
+                  item-value="id"
+                  class="purple-input"
+                  outlined
+                  @change="updateVendorData"
+                />
               </v-col>
+              <!-- textfields with client -->
               <v-container class="py-0">
                 <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-if="selectedUserType === 'Vendedor'"
+                      v-model="user.rif"
+                      label="Cedula"
+                      class="purple-input"
+                      :readonly="option === 1 || option === 2"
+                      :rules="[rules.required]"
+                    />
+                  </v-col>
                   <v-col cols="12" md="6">
                     <v-text-field
                       v-model="user.name"
@@ -62,8 +93,9 @@
                   </v-col>
                   <v-col cols="12" md="6">
                     <v-text-field
+                      v-if="selectedUserType === 'Vendedor'"
                       v-model="user.lastname"
-                      label="Rif"
+                      label="Apellido del Cliente"
                       class="purple-input"
                       :readonly="option === 1 || option === 2"
                       :rules="[rules.required]"
@@ -71,13 +103,23 @@
                   </v-col>
                   <v-col cols="12" md="6">
                     <v-text-field
-                      v-model="user.reference"
-                      label="Codigo"
+                      v-if="selectedUserType === 'Cliente'"
+                      v-model="user.rif"
+                      label="Rif"
                       class="purple-input"
                       :readonly="option === 1 || option === 2"
                       :rules="[rules.required]"
                     />
                   </v-col>
+                  <!-- <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="user.codigo"
+                      label="Codigo"
+                      class="purple-input"
+                      :readonly="option === 1 || option === 2"
+                      :rules="[rules.required]"
+                    />
+                  </v-col> -->
                   <v-col cols="12" md="6">
                     <v-text-field
                       v-model="user.phone"
@@ -89,10 +131,11 @@
                   </v-col>
                   <v-col cols="12" md="12">
                     <v-text-field
+                    v-if="selectedUserType === 'Cliente'"
                       v-model="user.address"
                       label="Direccion"
                       class="purple-input"
-                      :readonly="option === 1 || option === 2"
+                      :readonly=" option === 2"
                       :rules="[rules.required]"
                     />
                   </v-col>
@@ -131,7 +174,7 @@
                       v-model="user.password"
                       :type="show1 ? 'text' : 'password'"
                       :append-icon="show1 ? 'mdi-eye' : ' mdi-eye-off'"
-                      :rules="[rules.required,rules.min]"
+                      :rules="[rules.required, rules.min]"
                       label="Ingrese una contraseña"
                       prepend-icon="mdi-lock-outline"
                       class="purple-input"
@@ -186,19 +229,20 @@
 <script>
 import i18n from "@/i18n";
 import { createUser, updateUser } from "../../../api/modules/user";
+import { vendorGetList} from '../../../api/modules/vendor'
 import { clientGetList } from "../../../api/modules/client";
-import {apiHttp} from '../../../api/axiosApi'
+import { apiHttp } from "../../../api/axiosApi";
 
 export default {
   data: () => ({
     tabs: 0,
     option: 0,
     setTimeout: 0,
+    timeout: 0,
     show1: false,
     title: "",
     snackbar: "",
     message: "",
-
     user: {
       id: "",
       name: "",
@@ -222,8 +266,19 @@ export default {
       address: "",
       phone: ""
     },
+    vendor: {
+      id: "",
+      ci: "",
+      name: "",
+      lastname: "",
+      phone: ""
+    },
+    userTypes: ['Cliente', 'Vendedor'],
+    selectedUserType: null,
     selectedClient: null,
+    selectedVendor: null,
     itemsClient: [],
+    itemsVendor: [],
     roles: [
       {
         name: "admin"
@@ -262,6 +317,7 @@ export default {
   mounted() {
     this.initialize();
     this.getListClient();
+    this.getListVendor();
   },
 
   methods: {
@@ -270,6 +326,11 @@ export default {
       if (this.option === 3 || this.option === 2) {
         this.user = this.$route.params.usersData;
       }
+      if (this.userType === 'Cliente') {
+      this.user.role = "user";
+    } else if (this.userType === 'Vendedor') {
+      this.user.role = "tecnico";
+    }
     },
     async getListClient() {
       let result;
@@ -282,72 +343,96 @@ export default {
         this.message = result.message.text;
       }
     },
+    async getListVendor() {
+      let result;
+      result = await vendorGetList();
+      if (result.status == 200) {
+        console.log(result.data);
+        this.itemsVendor = result.data;
+      } else {
+        this.dialog = true;
+        this.message = result.message.text;
+      }
+    },
     updateClientData() {
       const client = this.itemsClient.find(
         item => item.id === this.selectedClient
       );
       if (client) {
+        this.user.role = "user";
         this.user.address = client.address || "";
         this.user.phone = client.phone || "";
         this.user.name = client.name || "";
-        this.user.lastname = client.rif || "";
-        this.user.reference = client.codigo || "";
+        this.user.rif = client.rif || "";
+        this.user.codigo = client.codigo || "";
       }
+      console.log("client updateClientData", client)
+    },
+    updateVendorData() {
+      const vendor = this.itemsVendor.find(
+        item => item.id === this.selectedVendor
+      );
+      if (vendor) {
+        this.user.role = "tecnico";
+        this.user.rif = vendor.ci || "";
+        this.user.name = vendor.name || "";
+        this.user.lastname = vendor.lastname || "";
+        this.user.phone = vendor.phone || "";
+        this.user.address = "default";
+        this.user.codigo = "001";
+      }
+      console.log("vendor updateVendorData", vendor)
     },
     async submit() {
       if (this.option === 1) {
-        if (this.$refs.form.validate()) {
-          let user = {
-            name: this.user.name,
-            lastname: this.user.lastname,
-            role: 'tecnico',
-            email: this.user.email,
-            password: this.user.password,
-            address: this.user.address,
-            reference: this.user.reference,
-            phone: this.user.phone,
-            // urlAvatar: ""
-          };
-          const   result = await apiHttp('post', '/api/v1/auth/register',user)
+    if (this.$refs.form.validate()) {
+      let user = {
+        role: this.user.role,
+        name: this.user.name,
+        lastname: this.user.lastname || "-",
+        email: this.user.email,
+        reference: this.user.reference || "default",
+        password: this.user.password,
+        address: this.user.address,
+        phone: this.user.phone,
+        rif: this.user.rif || "1",
+        codigo: this.user.codigo || "1"
+      };
+      console.log("Datos enviados:", user);
 
-          if (result.status==201) {
+      try {
+        const result = await apiHttp("post", "/api/v1/auth/register", user);
+        console.log("Resultado de la solicitud:", result);
 
+        if (result.status == 201) {
           this.snackbar = true;
           this.message = "Registro exitoso";
           setTimeout(() => {
-                  this.$router.push({ name: 'Users' })
-                }, 2000)
-                
-
-          } else {
-          // Muestra un mensaje de error si la autenticación falla
-          this.dialog = true;
-          this.message = result.message.text;
-          }
-          // user = await createUser(user);
-
-          // if (user.status == 201) {
-          //   this.snackbar = true;
-          //   this.message = "Registro exitoso";
-
-          //   setTimeout(() => {
-          //     this.$router.push({ name: "Users" });
-          //   }, 2000);
-          // } else {
-          //   this.snackbar = true;
-          //   this.message = "Hubo un error durante el registro";
-          //   setTimeout(() => {
-          //     this.snackbar = false;
-          //   }, 1000);
-          // }
+            this.$router.push({ name: "Users" });
+          }, 2000);
         } else {
           this.snackbar = true;
-          this.message = "Debe llenar todos los campos requeridos";
+          this.message = result.message.text || "Ocurrió un error durante el registro";
           setTimeout(() => {
             this.snackbar = false;
           }, 1000);
         }
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+        this.snackbar = true;
+        this.message = "Ocurrió un error durante la solicitud";
+        setTimeout(() => {
+          this.snackbar = false;
+        }, 1000);
       }
+    } else {
+      this.snackbar = true;
+      this.message = "Debe llenar todos los campos requeridos";
+      setTimeout(() => {
+        this.snackbar = false;
+      }, 1000);
+    }
+  }
       if (this.option === 3) {
         if (this.$refs.form.validate()) {
           let id = this.user.id;
@@ -383,7 +468,16 @@ export default {
         }
       }
     }
+  },
+  watch: {
+  selectedUserType(newType) {
+    if (newType === 'Cliente') {
+      this.user.role = "user";
+    } else if (newType === 'Vendedor') {
+      this.user.role = "tecnico";
+    }
   }
+}
 };
 </script>
 

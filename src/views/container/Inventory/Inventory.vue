@@ -139,7 +139,7 @@
         </v-card>
       </v-dialog>
 
-      <v-card-text style="height: 100px; position: relative">
+      <!-- <v-card-text style="height: 100px; position: relative">
         <v-fab-transition>
           <v-btn
             fab
@@ -154,7 +154,7 @@
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </v-fab-transition>
-      </v-card-text>
+      </v-card-text> -->
     </base-material-card>
   </v-container>
 </template>
@@ -208,11 +208,11 @@
         //   value: 'role',
         // },
         
-        {
-          sortable: false,
-          text: 'Acciones',
-          value: 'actions',
-        },
+        // {
+        //   sortable: false,
+        //   text: 'Acciones',
+        //   value: 'actions',
+        // },
       ],
       items: [ ],
       search: undefined,

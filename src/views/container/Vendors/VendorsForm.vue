@@ -41,49 +41,39 @@
               <v-form ref="form" lazy-validation>
                 <v-container class="py-0">
                   <v-row>
-                    
                     <v-col cols="12" md="6">
                       <v-text-field
-                        v-model="client.name"
+                        v-model="vendor.ci"
+                        color="secondary"
+                        label="Cedula"
+                        class="purple-input"
+                        :readonly="option === 2 || option === 3"
+                      />
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        v-model="vendor.name"
+                        color="secondary"
                         label="Nombre"
                         class="purple-input"
                         :readonly="option === 2"
-                        :rules="[rules.required]"
                       />
                     </v-col>
                     <v-col cols="12" md="6">
                       <v-text-field
-                        v-model="client.rif"
-                        label="Rif"
+                        v-model="vendor.lastname"
+                        color="secondary"
+                        label="Apellido"
                         class="purple-input"
                         :readonly="option === 2"
-                      />
-                    </v-col>
-                    <v-col  :hidden="option==3" cols="12" md="6">
-                      <v-text-field
-                        v-model="client.codigo"
-                        label="Codigo"
-                        class="purple-input"
-                        :readonly="option === 2 || option === 3"
-                        :rules="[rules.emailRules]"
-                      />
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-text-field
-                        v-model="client.address"
-                        label="Direccion"
-                        class="purple-input"
-                        :readonly="option === 2"
-                        :rules="[rules.required]"
                       />
                     </v-col>
                     <v-col cols="12" md="6">
                      
                           <v-text-field
-                            v-model="client.phone"
+                            v-model="vendor.phone"
                             color="secondary"
                             label="Teléfono"
-                            :rules="[rules.required]"
                             :readonly="option === 2"
                           />
                         
@@ -132,7 +122,7 @@
   
   <script>
     import i18n from '@/i18n'
-    import {createClient,updateUser} from '../../../api/modules/client'
+    import {createVendor,updateVendor} from '../../../api/modules/vendor'
   
     export default {
   
@@ -141,31 +131,15 @@
         option: 0,
         setTimeout:0,
         show1: false,
+        timeout: 0,
         title: '',
         snackbar: '',
         message: '',
-       
-        user: {
-          id: '',
-          name: '',
-          codigo: '',
-          rif: '',
-          password: '',
-          role: '',
-          urlAvatar: '',
-          reference:'',
-          address:'',
-          phone:'',
-          code:'',
-          createdAt:'', 
-          updatedAt:''
-        },
-        client: {
+        vendor: {
           id: "",
-          codigo: "",
+          ci: "",
           name: "",
-          rif: "",
-          address: "",
+          lastname: "",
           phone: "",
           createdAt: "",
           updatedAt: ""
@@ -203,7 +177,7 @@
         initialize () {
           this.option = this.$route.params.option
           if (this.option === 3 || this.option === 2) {
-            this.client = this.$route.params.clientData;
+            this.vendor = this.$route.params.vendorsData;
           }
          
            
@@ -212,16 +186,15 @@
        async  submit () {
           if (this.option === 1) {
             if (this.$refs.form.validate()) {
-  
-              let client = {
-                codigo: this.client.codigo,
-                name: this.client.name,
-                rif: this.client.rif,
-                address: this.client.address,
-                phone:this.client.phone,
+              console.log("llamar metodo createVendor")
+              let vendor = {
+                ci: this.vendor.ci,
+                name: this.vendor.name,
+                lastname: this.vendor.lastname,
+                phone:this.vendor.phone,
               }
-            
-              const result = await createClient(client)
+              console.log("vendor", vendor)
+              const result = await createVendor(vendor)
              
               
               if (result.status==201) {
@@ -252,17 +225,18 @@
           if (this.option === 3) {
             if (this.$refs.form.validate()) {
   
-              let id = this.client.id
+              let id = this.vendor.id
 
-              let client = {
-            name: this.client.name,
-            codigo: this.client.codigo,
-            address: this.client.address,
-            phone: this.client.phone,
-          }
+              let vendor = {
+                ci: this.vendor.ci,
+                name: this.vendor.name,
+                lastname: this.vendor.lastname,
+                phone:this.vendor.phone,
+              }
+              console.log("Vendors update: ", vendor)
              
-              user = await updateUser(id,client)
-              if (user.status == 200) {
+              vendor = await updateVendor(id,vendor)
+              if (vendor.status == 200) {
                 this.snackbar = true
                 this.message = 'Actualizacion exitosa'
                 setTimeout(() => {

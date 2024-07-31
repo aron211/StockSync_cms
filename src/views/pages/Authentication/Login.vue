@@ -178,7 +178,7 @@
         localStorage.setItem("id",result.data.id)
        let role= localStorage.getItem("rol")
        
-       if(role !== 'user'){
+       if(role){
         localStorage.setItem("token",result.data.token)
         localStorage.setItem("rol",result.data.role)
       this.$router.push('/home/Dashboard'); 

@@ -77,7 +77,7 @@
             fab
             class="px-1 ml-1"
             x-small
-            @click="deleteClient(item)"
+            @click="deleteVendor(item)"
           >
             <v-icon
               small
@@ -161,7 +161,7 @@
 
   <script>
   import i18n from '@/i18n'
-  import { clientGetList ,deleteClient} from '../../../api/modules/client'
+  import { vendorGetList ,deleteVendor} from '../../../api/modules/vendor'
   export default {
     name: 'DashboardDataTables',
     data: () => ({
@@ -174,16 +174,16 @@
       headers: [
        
         {
-          text: 'Codigo',
-          value: 'codigo',
+          text: 'Cedula',
+          value: 'ci',
         },
         {
           text: 'Nombre',
           value: 'name',
         },
         {
-          text: 'Rif',
-          value: 'rif',
+          text: 'Apellido',
+          value: 'lastname',
         },
         {
           text: 'Telefono',
@@ -214,7 +214,7 @@
     methods: {
       data: async function () {
         let result
-        result = await clientGetList()
+        result = await vendorGetList()
         if (result.status==200) {
          console.log(result.data)
          this.items = result.data
@@ -239,7 +239,7 @@
           name: 'VendorsForm',
           params: {
             option: 2, // option 2 to show
-            usersData: item,
+            vendorsData: item,
           },
         })
       },
@@ -249,12 +249,12 @@
           name: 'VendorsForm',
           params: {
             option: 3, // option 3 to edit
-            usersData: item,
+            vendorsData: item,
           },
         })
       },
-      deleteClient (item) {
-        this.idClient = item.id
+      deleteVendor (item) {
+        this.idVendor = item.id
         this.dialogDelete = true
       },
       closeDelete () {
@@ -264,7 +264,7 @@
     
         async deleteItemConfirm () {
           let result
-          result = await deleteClient(this.idClient)
+          result = await deleteVendor(this.idVendor)
           
           if (result.status === 200) {
          

@@ -44,6 +44,9 @@
         multi-sort
         class="elevation-1"
       >
+        <template v-slot:[`item.role`]="{ item }">
+          {{ getRoleLabel(item.role) }}
+        </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn
             :key="1"
@@ -181,10 +184,17 @@
           text: i18n.t('users.lastName'),
           value: 'lastname',
         },
-        
+        {
+          text: "Rif o cedula",
+          value: 'rif',
+        },
         {
           text: i18n.t('users.email'),
           value: 'email',
+        },
+        {
+          text: "Tipo de usuario",
+          value: 'role',
         },
        
         // {
@@ -208,7 +218,7 @@
       const loggedUserId = localStorage.getItem('id');
       console.log("idUserLogged: ",loggedUserId)
       return this.items.filter(item => item.id !== loggedUserId);
-    }
+    },
     },
 
     mounted () {
@@ -216,6 +226,9 @@
     },
 
     methods: {
+      getRoleLabel(role) {
+        return role === 'user' ? 'Cliente' : (role === 'tecnico' ? 'Vendedor' : 'Desconocido');
+      },
       data: async function () {
         let result
         result = await usersGetList()
