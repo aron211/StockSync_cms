@@ -175,7 +175,7 @@ export default {
     filteredItems() {
       const loggedUserId = localStorage.getItem("id");
       console.log("idUserLogged: ", loggedUserId);
-      return this.items.filter(item => item.user.id === loggedUserId);
+      return this.items.filter(item =>item.user && item.user.id === loggedUserId);
     }
   },
   mounted() {
