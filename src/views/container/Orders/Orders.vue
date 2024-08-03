@@ -138,6 +138,7 @@ export default {
     hidden: false,
     timeout: 0,
     idord: null,
+    roleUser: localStorage.getItem("rol") || "",
     headers: [
       // {
       //   text: 'Código',
@@ -145,11 +146,11 @@ export default {
       // },
       {
         text: "Nombre del cliente",
-        value: "user.name"
+        value: "nameCli"
       },
       {
         text: "Rif",
-        value: "user.lastname"
+        value: "codigo"
       },
       {
         text: "Monto total",
@@ -174,7 +175,12 @@ export default {
   computed: {
     filteredItems() {
       const loggedUserId = localStorage.getItem("id");
+      const roleUser = this.roleUser;
       console.log("idUserLogged: ", loggedUserId);
+      console.log("roleUser: ", roleUser);
+      if (roleUser === 'admin') {
+        return this.items.filter(item =>item.user && item.user.id !== loggedUserId);
+      }
       return this.items.filter(item =>item.user && item.user.id === loggedUserId);
     }
   },

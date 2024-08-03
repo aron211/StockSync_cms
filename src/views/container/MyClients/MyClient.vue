@@ -227,7 +227,7 @@
       },
       create () {
         this.$router.push({
-          name: 'ClientsForm',
+          name: 'MyClientsForm',
           params: {
             option: 1, // option 1 to create
           },
@@ -236,7 +236,7 @@
       show (item) {
         console.log(item)
         this.$router.push({
-          name: 'ClientsForm',
+          name: 'MyClientsForm',
           params: {
             option: 2, // option 2 to show
             usersData: item,
@@ -246,7 +246,7 @@
       edit (item) {
         console.log(item)
         this.$router.push({
-          name: 'ClientsForm',
+          name: 'MyClientsForm',
           params: {
             option: 3, // option 3 to edit
             usersData: item,

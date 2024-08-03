@@ -170,12 +170,14 @@
 
       // Llama a la API para autenticar al usuario
       const result = await apiHttp('post', '/api/v1/auth/login',userToLogin);
+      console.log(result)
       if (result.status==201) {
         // Autenticación exitosa, redirige al usuario al dashboard
         localStorage.setItem("rol",result.data.role)
         localStorage.setItem("name",result.data.name)
         localStorage.setItem("lastName",result.data.lastname)
         localStorage.setItem("id",result.data.id)
+        localStorage.setItem("rif",result.data.rif)
        let role= localStorage.getItem("rol")
        
        if(role){

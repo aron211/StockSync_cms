@@ -5,6 +5,30 @@ async function vendorGetList() {
     const result = await apiHttp('get', '/api/v1/vendors');
     return result
 }
+// async function getClientesByVendor(vendorId) {
+//     console.log("call metodo getClientesByVendedir")
+//     try {
+//       const result = await apiHttp('get', `/api/v1/vendors/clientes/${vendorId}`);
+//       console.log("API response for getClientesByVendor:", result);
+//       console.log("Result.data:", result.data); // Si la respuesta está en result.data
+//       console.log("Client data:", result.data ? result.data.clients : 'No clients found');
+//       return result;
+//     } catch (error) {
+//       console.error('Error in getClientesByVendor:', error);
+//     }
+//   }
+async function getClientesByVendor(ci) {
+    console.log("call metodo getClientesByVendedir")
+    try {
+      const result = await apiHttp('get', `/api/v1/vendors/clientes/${ci}`);
+      console.log("API response for getClientesByVendor:", result);
+      console.log("Result.data:", result.data); // Si la respuesta está en result.data
+      console.log("Client data:", result.data ? result.data.clients : 'No clients found');
+      return result;
+    } catch (error) {
+      console.error('Error in getClientesByVendor:', error);
+    }
+  }
 
 // async function usersGet (IdUserLanding) {
 //   let result
@@ -39,6 +63,7 @@ async function updateVendor(id, vendorToUpdate) {
 
 export {
     vendorGetList,
+    getClientesByVendor,
     updateVendor,
     deleteVendor,
     createVendor,

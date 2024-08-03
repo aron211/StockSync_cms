@@ -13,7 +13,6 @@
                 mdi-account-key
               </v-icon>
               {{ getTitleButton }}
-              
             </v-tab>
           </v-tabs>
         </template>
@@ -34,8 +33,8 @@
             </v-btn>
           </v-fab-transition>
         </v-card-text>
-         <!-- Table with details of orders created -->
-         <v-data-table
+        <!-- Table with details of orders created -->
+        <v-data-table
           :headers="orderHeaders"
           :items="selectedItems"
           class="elevation-1"
@@ -55,10 +54,10 @@
             </v-footer>
           </template>
         </v-data-table>
-                 <!-- search client register -->
-                 <v-divider class="mt-5" />
+        <!-- search client register -->
+        <v-divider class="mt-5" />
         <v-autocomplete
-          v-if="this.roleUser==='tecnico'"
+          
           v-model="selectedClient"
           :items="itemsClient"
           label="Seleciona el cliente a agregar"
@@ -66,8 +65,7 @@
           item-value="id"
           class="purple-input"
           outlined
-          @change="handleClientChange"
-          
+          @change="updateClientData"
         />
         <v-divider class="mt-5" />
         <v-autocomplete
@@ -79,7 +77,6 @@
           label="Buscar producto"
           clearable
         />
-
         <!-- Table inventary -->
         <v-divider class="mt-10" />
         <v-data-table
@@ -116,7 +113,7 @@
           </template>
         </v-data-table>
         <v-divider class="mt-10" />
-        
+
         <!-- Table with products selecteds to create new order -->
         <v-data-table
           :headers="orderHeaders"
@@ -177,6 +174,7 @@ export default {
     title: "",
     snackbar: "",
     message: "",
+    itemsClient: [],
     ordersData: {
       id: "",
       type: "",
@@ -184,6 +182,7 @@ export default {
       status: "",
       products: []
     },
+    selectedItems: [],
     headers: [
       {
         text: "Código",
@@ -215,11 +214,6 @@ export default {
         value: "actions"
       }
     ],
-    itemsClient: [],
-    selectedItems: [],
-    // selectedClientData: [],
-    selectedClient: null,
-    selectedClientData: null,
     items: [],
     filteredItems: [],
     searchTerm: "",
@@ -229,10 +223,10 @@ export default {
       { text: "Cantidad", value: "quantity" },
       { text: "Precio Total", value: "total" }
     ],
+    selectedItems: [],
     maxQuantityError: "",
-    clientID: localStorage.getItem("id") || "", 
-    clientName: localStorage.getItem("name") || "",
-    roleUser: localStorage.getItem("rol") || ""
+    clientID: localStorage.getItem("id") || "",
+    clientName: localStorage.getItem("name") || ""
   }),
   computed: {
     getTitle() {
@@ -252,12 +246,10 @@ export default {
         (sum, item) => sum + item.priceD * item.quantity,
         0
       );
-    },
-
+    }
   },
   mounted() {
-    this.initialize(), 
-    this.data();
+    this.initialize(), this.data();
     this.getListClient();
   },
   methods: {
@@ -278,49 +270,38 @@ export default {
         this.message = result.message.text;
       }
     },
-    // updateClientData() {
-    //   const client = this.itemsClient.find(
-    //     item => item.id === this.selectedClient
-    //   );
-    //   if (client) {
-    //     this.user.role = "user";
-    //     this.user.address = client.address || "";
-    //     this.user.phone = client.phone || "";
-    //     this.user.name = client.name || "";
-    //     this.user.rif = client.rif || "";
-    //     this.user.codigo = client.codigo || "";
-    //   }
-    //   console.log("client updateClientData", client);
-    // },
     updateClientData() {
-      this.selectedClientData = this.itemsClient.find(client => client.id === this.selectedClient);
-      console.log("Client Data Updated:", this.selectedClientData);
+      const client = this.itemsClient.find(
+        item => item.id === this.selectedClient
+      );
+      if (client) {
+        this.user.role = "user";
+        this.user.address = client.address || "";
+        this.user.phone = client.phone || "";
+        this.user.name = client.name || "";
+        this.user.rif = client.rif || "";
+        this.user.codigo = client.codigo || "";
+      }
+      console.log("client updateClientData", client);
     },
-    storeClientData() {
-      localStorage.setItem('selectedClientData', JSON.stringify(this.selectedClientData));
-      console.log("Client Data Stored:", localStorage.getItem('selectedClientData'));
-    },
-    handleClientChange() {
-      this.updateClientData();
-      this.storeClientData();
-    },
-
     initialize() {
       this.option = this.$route.params.option;
       if (this.option === 3 || this.option === 2) {
         this.ordersData = this.$route.params.ordersData;
-        console.log('ordersData:', this.ordersData);
-        this.selectedItems = this.ordersData.orderProducts.map(orderProduct => ({
-          id: orderProduct.product.id,
-          codigo: orderProduct.product.codigo,
-          name: orderProduct.product.name,
-          marca: orderProduct.product.marca,
-          cant: orderProduct.product.cant,
-          priceD: orderProduct.product.priceD,
-          priceM: orderProduct.product.priceM,
-          quantity: orderProduct.quantity
-    }));
-        console.log('selectedItems:', this.selectedItems);
+        console.log("ordersData:", this.ordersData);
+        this.selectedItems = this.ordersData.orderProducts.map(
+          orderProduct => ({
+            id: orderProduct.product.id,
+            codigo: orderProduct.product.codigo,
+            name: orderProduct.product.name,
+            marca: orderProduct.product.marca,
+            cant: orderProduct.product.cant,
+            priceD: orderProduct.product.priceD,
+            priceM: orderProduct.product.priceM,
+            quantity: orderProduct.quantity
+          })
+        );
+        console.log("selectedItems:", this.selectedItems);
       }
     },
     data: async function() {
@@ -343,41 +324,22 @@ export default {
         this.message = "No hay productos seleccionados para el pedido";
         return;
       }
+      const orderData = {
+          priceTotal: this.totalOrderPrice.toString(),
+          userId: this.clientID,
+          products: this.selectedItems.map(item => ({
+            productId: item.id,
+            quantity: item.quantity
+          }))
+        };
       try {
-        let orderData={};
-        if (!this.user) {
-      // Carga la información del usuario si no está disponible
-      this.user = JSON.parse(localStorage.getItem('user')) || {};
-    }
         if (this.roleUser === "user") {
-          orderData = {
-            codigo: "10",
-            nameCli: this.clientName,
-            priceTotal: this.totalOrderPrice.toString(),
-            userId: this.clientID,
-            products: this.selectedItems.map(item => ({
-              productId: item.id,
-              quantity: item.quantity
-            }))
-          };
-        } else if (this.roleUser === "tecnico" && this.selectedClientData) {
-          orderData = {
-            codigo: this.selectedClientData.rif,
-            nameCli: this.selectedClientData.name,
-            priceTotal: this.totalOrderPrice.toString(),
-            userId: this.clientID,
-            products: this.selectedItems.map(item => ({
-              productId: item.id,
-              quantity: item.quantity
-            }))
-          };
-        } else {
-          this.snackbar = true;
-          this.message = "Por favor, selecciona un cliente válido";
-          return;
-        }
-
-        console.log("Role:", this.roleUser);
+    orderData.codigo = this.user.codigo;
+    orderData.nameCli = this.clientName;
+  } else if (this.roleUser === "tecnico") {
+    orderData.rif = this.user.rif;
+    orderData.nameCli = this.clientName;
+  }
         console.log("Sending order data:", orderData);
 
         const response = await createorder(orderData);
@@ -401,7 +363,7 @@ export default {
         this.message = "Ocurrió un error al conectarse con el servidor";
       }
     },
-  
+
     toggleProduct(item) {
       if (item.selected) {
         this.selectedItems.push({ ...item, quantity: item.quantity || 1 });
@@ -415,7 +377,7 @@ export default {
       const maxQuantity = item.cant;
       if (item.quantity > maxQuantity) {
         item.errorMessages = [`Máximo disponible: ${maxQuantity}`];
-        item.quantity = maxQuantity; 
+        item.quantity = maxQuantity;
       } else {
         item.errorMessages = [];
       }

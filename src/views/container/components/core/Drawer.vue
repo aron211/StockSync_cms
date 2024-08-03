@@ -195,7 +195,29 @@
         },
         
       ]
-      } else {
+      } else if(role === 'tecnico') {
+        this.items = [
+        {
+          group: '/home',
+          icon: 'mdi-view-dashboard',
+          title: 'DASHBOARD',
+          to: '/home/Dashboard',
+        },
+        {
+          group: '/home',
+          icon: 'mdi-plus-network',
+          title: 'Mis Clientes',
+          to: '/home/myclients/myclients',
+        },
+        {
+          group: '/home',
+          icon: 'mdi-plus-network',
+          title: 'Pedidos',
+          to: '/home/Orders/Orders',
+        },
+        ];
+      }
+       else if (role === 'user') {
         this.items = [
         {
           group: '/home',

@@ -82,6 +82,18 @@ export default new Router({
           component: () => import("@/views/container/Client/ClientForm")
         },
         {
+          name: "MyClient",
+          path: "myclients/myclients",
+          // beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/MyClients/MyClient")
+        },
+        {
+          name: "MyClientsForm",
+          path: "myclients/form",
+          // beforeEnter: AuthorizationFunction,
+          component: () => import("@/views/container/MyClients/MyClientForm")
+        },
+        {
           name: "Users",
           path: "users/users",
           // beforeEnter: AuthorizationFunction,
