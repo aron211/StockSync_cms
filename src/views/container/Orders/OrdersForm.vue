@@ -191,7 +191,7 @@ export default {
       },
       {
         text: "Nombre del",
-        value: "product.name"
+        value: "name"
       },
       {
         text: "Marca",

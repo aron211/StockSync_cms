@@ -115,7 +115,8 @@
             color="grenndark"
             fixed
             right
-            bottom
+            
+            v-if="this.roleUser!==admind"
             @click="create"
           >
             <v-icon>mdi-plus</v-icon>

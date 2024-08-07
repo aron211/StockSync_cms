@@ -181,27 +181,25 @@
           value: 'name',
         },
         {
-          text: i18n.t('users.lastName'),
-          value: 'lastname',
+          text: "Email",
+          value: 'reference',
         },
+        // {
+        //   text: "Rif o cedula",
+        //   value: 'ci',
+        // },
         {
-          text: "Rif o cedula",
-          value: 'rif',
-        },
-        {
-          text: i18n.t('users.email'),
+          text: "Codigo/Nombre usuario",
           value: 'email',
         },
         {
           text: "Tipo de usuario",
           value: 'role',
         },
-       
         // {
         //   text: i18n.t('users.rol'),
         //   value: 'role',
-        // },
-        
+        // },       
         {
           sortable: false,
           text: 'Acciones',
@@ -214,11 +212,11 @@
     }),
 
     computed: {
-      filteredItems() {
+    filteredItems() {
       const loggedUserId = localStorage.getItem('id');
       console.log("idUserLogged: ",loggedUserId)
       return this.items.filter(item => item.id !== loggedUserId);
-    },
+    }
     },
 
     mounted () {
@@ -260,16 +258,6 @@
           },
         })
       },
-      // edit (item) {
-      //   console.log(item)
-      //   this.$router.push({
-      //     name: 'UsersFrom',
-      //     params: {
-      //       option: 3, // option 3 to edit
-      //       usersData: item,
-      //     },
-      //   })
-      // },
       deleteuser (item) {
         this.iduser = item.id
         this.dialogDelete = true

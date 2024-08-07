@@ -177,7 +177,7 @@
         localStorage.setItem("name",result.data.name)
         localStorage.setItem("lastName",result.data.lastname)
         localStorage.setItem("id",result.data.id)
-        localStorage.setItem("rif",result.data.rif)
+        localStorage.setItem("email",result.data.email)
        let role= localStorage.getItem("rol")
        
        if(role){

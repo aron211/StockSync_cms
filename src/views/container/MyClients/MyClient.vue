@@ -37,7 +37,7 @@
       <v-divider class="mt-3" />
       <v-data-table
         :headers="headers"
-        :items="items"
+        :items="filteredItems"
         :search.sync="search"
         :sort-by="['id', 'titulo']"
         :sort-desc="[false, true]"
@@ -206,7 +206,13 @@
 
     }),
 
-
+    computed: {
+    filteredItems() {
+      const vendorIdLogged = localStorage.getItem('email');
+      console.log("vendorIdLogged: ",vendorIdLogged)
+      return this.items.filter(item => item.codven === vendorIdLogged);
+    }
+    },
     mounted () {
       this.data()
     },

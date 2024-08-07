@@ -173,10 +173,10 @@
       id: null,
       headers: [
        
-        {
-          text: 'Codigo',
-          value: 'codigo',
-        },
+        // {
+        //   text: 'Codigo',
+        //   value: 'codigo',
+        // },
         {
           text: 'Nombre',
           value: 'name',
