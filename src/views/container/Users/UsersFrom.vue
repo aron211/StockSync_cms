@@ -83,6 +83,15 @@
                   </v-col>
                   <v-col cols="12" md="6">
                     <v-text-field
+                      v-model="user.codigo"
+                      label="Código"
+                      class="purple-input"
+                      :readonly="option === 1 || option === 2"
+                      :rules="[rules.required]"
+                    />
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
                       v-if="selectedUserType === 'Cliente'"
                       v-model="user.rif"
                       label="Rif"
@@ -100,11 +109,21 @@
                       :readonly="option === 1 || option === 2"
                     />
                   </v-col>
-                  <v-col cols="12" md="12">
+                  <v-col cols="12" md="8">
                     <v-text-field
                       v-if="selectedUserType === 'Cliente'"
                       v-model="user.address"
                       label="Direccion"
+                      class="purple-input"
+                      :readonly="option === 2"
+                      :rules="[rules.required]"
+                    />
+                  </v-col>
+                  <v-col cols="12" md="4">
+                    <v-text-field
+                      v-if="selectedUserType === 'Cliente'"
+                      v-model="user.lastname"
+                      label="Email"
                       class="purple-input"
                       :readonly="option === 2"
                       :rules="[rules.required]"
@@ -149,9 +168,18 @@
                     </h1>
                     <br>
                   </v-col>
-                  <v-col :hidden="option == 3" cols="12" md="6">
+                  <v-col v-if="selectedUserType === 'Vendedor'" :hidden="option == 3" cols="12" md="6">
                     <v-text-field
                       v-model="user.rif"
+                      label="Nombre de usuario"
+                      class="purple-input"
+                      :readonly="true"
+                      :rules="[rules.required]"
+                    />
+                  </v-col>
+                  <v-col v-if="selectedUserType === 'Cliente'" :hidden="option == 3" cols="12" md="6">
+                    <v-text-field
+                      v-model="user.codigo"
                       label="Nombre de usuario"
                       class="purple-input"
                       :readonly="true"
@@ -264,7 +292,7 @@ export default {
       email: "",
       phone: ""
     },
-    userTypes: [ "Vendedor"],
+    userTypes: [ "Cliente","Vendedor"],
     selectedUserType: null,
     selectedClient: null,
     selectedVendor: null,
@@ -354,6 +382,7 @@ export default {
         this.user.address = client.address || "";
         this.user.phone = client.phone || "";
         this.user.name = client.name || "";
+        this.user.lastname = client.email || "";
         this.user.rif = client.rif || "";
         this.user.codigo = client.codigo || "";
       }
@@ -377,19 +406,37 @@ export default {
     async submit() {
       if (this.option === 1) {
         if (this.$refs.form.validate()) {
-          let user = {
-            role: this.user.role,
-            name: this.user.name,
-            lastname: ".",
-            email: this.user.rif,
-            reference: this.user.lastname,
-            password: this.user.password,
-            address: this.user.address,
-            phone: ".",
-            rif: this.user.rif || "1",
-            codigo: this.user.codigo || "1"
-          };
-          console.log("Datos enviados:", user);
+          let user = {}
+          if(this.selectedUserType === "Vendedor"){
+            user = {
+              role: this.user.role,
+              name: this.user.name,
+              lastname: ".",
+              email: this.user.rif,
+              reference: this.user.lastname,
+              password: this.user.password,
+              address: this.user.address,
+              phone: ".",
+              rif: this.user.rif || "1",
+              codigo: this.user.codigo || "1"
+            };
+            console.log("Datos enviados:", user);
+          }
+          else if(this.selectedUserType === "Cliente") {
+            user = {
+              role: this.user.role,
+              name: this.user.name,
+              lastname: ".",
+              email: this.user.codigo,
+              reference: this.user.lastname,
+              password: this.user.password,
+              address: this.user.address,
+              phone: ".",
+              rif: this.user.rif || "1",
+              codigo: this.user.codigo || "1"
+            };
+            console.log("Datos enviados:", user);
+          }
 
           try {
             const result = await apiHttp("post", "/api/v1/auth/register", user);

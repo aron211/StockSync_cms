@@ -174,32 +174,32 @@
       headers: [
        
         {
-          text: 'Cedula',
-          value: 'ci',
+          text: 'Código',
+          value: 'codven',
         },
         {
           text: 'Nombre',
           value: 'name',
         },
         {
-          text: 'Apellido',
-          value: 'lastname',
+          text: 'Email',
+          value: 'email',
         },
-        {
-          text: 'Telefono',
-          value: 'phone',
-        },
+        // {
+        //   text: 'Telefono',
+        //   value: 'phone',
+        // },
        
         // {
         //   text: i18n.t('users.rol'),
         //   value: 'role',
         // },
         
-        {
-          sortable: false,
-          text: 'Acciones',
-          value: 'actions',
-        },
+        // {
+        //   sortable: false,
+        //   text: 'Acciones',
+        //   value: 'actions',
+        // },
       ],
       items: [ ],
       search: undefined,

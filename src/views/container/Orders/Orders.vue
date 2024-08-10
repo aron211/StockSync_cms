@@ -116,7 +116,7 @@
             fixed
             right
             
-            v-if="this.roleUser!==admind"
+            v-if="this.roleUser!==`admin`"
             @click="create"
           >
             <v-icon>mdi-plus</v-icon>
@@ -150,6 +150,10 @@ export default {
         value: "nameCli"
       },
       {
+        text: "Codigo del cliente",
+        value: "cliente"
+      },
+      {
         text: "Rif",
         value: "codigo"
       },
@@ -175,14 +179,16 @@ export default {
   },
   computed: {
     filteredItems() {
-      const loggedUserId = localStorage.getItem("id");
+      const logguedCodven = localStorage.getItem("email");
       const roleUser = this.roleUser;
-      console.log("idUserLogged: ", loggedUserId);
+      console.log("logguedCodven: ", logguedCodven);
       console.log("roleUser: ", roleUser);
+      
       if (roleUser === 'admin') {
-        return this.items.filter(item =>item.user && item.user.id !== loggedUserId);
+        return this.items.filter(item => item.codven !== logguedCodven);
+        
       }
-      return this.items.filter(item =>item.user && item.user.id === loggedUserId);
+      return this.items.filter(item => item.codven === logguedCodven);
     }
   },
   mounted() {

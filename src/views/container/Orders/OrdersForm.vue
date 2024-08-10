@@ -9,11 +9,8 @@
             slider-color="white"
           >
             <v-tab class="mr-3">
-              <v-icon class="mr-2">
-                mdi-account-key
-              </v-icon>
+              <v-icon class="mr-2"> mdi-account-key </v-icon>
               {{ getTitleButton }}
-              
             </v-tab>
           </v-tabs>
         </template>
@@ -34,8 +31,57 @@
             </v-btn>
           </v-fab-transition>
         </v-card-text>
-         <!-- Table with details of orders created -->
-         <v-data-table
+
+        <!-- Encabezado con detalles del pedido -->
+        <v-card
+          class="mb-4 border border-light"
+          style="background-color: #f5f5f5"
+          v-if="option === 2"
+        >
+          <v-card-title>
+            <v-row>
+              <v-col cols="12" md="4"
+                ><strong>Número de Pedido:</strong>
+                {{ ordersData.codigo }}</v-col
+              >
+              <v-col cols="12" md="4"
+                ><strong>Fecha:</strong>
+                {{ formatDate(ordersData.createdAt) }}</v-col
+              >
+              <v-col cols="12" md="4"
+                ><strong>Cliente:</strong> {{ ordersData.cliente }}</v-col
+              >
+              <v-col cols="12" md="4"
+                ><strong>Nombre Cliente:</strong>
+                {{ ordersData.nameCli }}</v-col
+              >
+              <v-col cols="12" md="4"
+                ><strong>RIF:</strong> {{ ordersData.rif }}</v-col
+              >
+              <!-- <v-col cols="12" md="4" v-if="roleUser === `user`">
+              <strong>Código Vendedor:</strong>
+                {{ this.clientLogued.codven }}
+              </v-col> -->
+              <v-col cols="12" md="4" v-if="roleUser === `tecnico`">
+              <strong>Código Vendedor:</strong>
+                {{ orderData.codven }}
+              </v-col>
+              <v-col cols="12" md="4"
+                ><strong>Comentario 1:</strong> {{ ordersData.comen1 }}</v-col
+              >
+              <v-col cols="12" md="4"
+                ><strong>Comentario 2:</strong> {{ ordersData.comen2 }}</v-col
+              >
+              <v-col cols="12" md="4"
+                ><strong>Total:</strong>
+                {{ totalOrderPrice.toFixed(2) }} bs</v-col
+              >
+            </v-row>
+          </v-card-title>
+        </v-card>
+
+        <!-- Table with details of orders created -->
+        <v-data-table
           :headers="orderHeaders"
           :items="selectedItems"
           class="elevation-1"
@@ -46,19 +92,28 @@
           </template>
           <template v-slot:footer>
             <v-footer>
-              <v-col class="text-left">
+              <v-col cols="12" md="6">
                 <strong>Fecha: {{ formatDate(ordersData.createdAt) }}</strong>
               </v-col>
-              <v-col class="text-right">
+              <!-- <v-col cols="12" md="3" >
+                <strong>Código Vendedor: {{ ordersData.codven }} </strong>
+              </v-col>
+              <v-col cols="12" md="3">
+                <strong>Código Cliente: {{ ordersData.cliente }} </strong>
+              </v-col> -->
+              <v-col cols="12" md="6" class="text-right">
                 <strong>Total: {{ totalOrderPrice.toFixed(2) }} bs</strong>
               </v-col>
+              <!-- <v-col cols="12" md="3">
+                <strong>Número de pedido: {{ ordersData.codigo }} </strong>
+              </v-col> -->
             </v-footer>
           </template>
         </v-data-table>
-                 <!-- search client register -->
-                 <v-divider class="mt-5" />
+        <!-- search client register -->
+        <v-divider class="mt-5" />
         <v-autocomplete
-          v-if="this.roleUser==='tecnico'"
+          v-if="this.roleUser === 'tecnico' && option !== 2"
           v-model="selectedClient"
           :items="itemsClient"
           label="Seleciona el cliente a agregar"
@@ -67,9 +122,9 @@
           class="purple-input"
           outlined
           @change="handleClientChange"
-          
         />
         <v-divider class="mt-5" />
+        <!-- buscar productos -->
         <v-autocomplete
           v-model="searchTerm"
           :items="items"
@@ -116,7 +171,7 @@
           </template>
         </v-data-table>
         <v-divider class="mt-10" />
-        
+
         <!-- Table with products selecteds to create new order -->
         <v-data-table
           :headers="orderHeaders"
@@ -169,6 +224,7 @@ import i18n from "@/i18n";
 import { createorder, GetListorder } from "../../../api/modules/orders";
 import { inventoryGetList } from "../../../api/modules/inventory";
 import { clientGetList } from "../../../api/modules/client";
+import { search } from "core-js/fn/symbol";
 export default {
   data: () => ({
     tabs: 0,
@@ -177,6 +233,7 @@ export default {
     title: "",
     snackbar: "",
     message: "",
+    search: null,
     ordersData: {
       id: "",
       type: "",
@@ -216,6 +273,7 @@ export default {
       }
     ],
     itemsClient: [],
+    client: [],
     selectedItems: [],
     // selectedClientData: [],
     selectedClient: null,
@@ -225,14 +283,15 @@ export default {
     searchTerm: "",
     orderHeaders: [
       { text: "Nombre", value: "name" },
-      { text: "Precio Unitario", value: "priceD" },
       { text: "Cantidad", value: "quantity" },
+      { text: "Precio Unitario", value: "priceD" },
       { text: "Precio Total", value: "total" }
     ],
     maxQuantityError: "",
-    clientID: localStorage.getItem("id") || "", 
+    clientID: localStorage.getItem("id") || "",
     clientName: localStorage.getItem("name") || "",
-    roleUser: localStorage.getItem("rol") || ""
+    roleUser: localStorage.getItem("rol") || "",
+    clientLogued: null, 
   }),
   computed: {
     getTitle() {
@@ -253,11 +312,9 @@ export default {
         0
       );
     },
-
   },
   mounted() {
-    this.initialize(), 
-    this.data();
+    this.initialize(), this.data();
     this.getListClient();
   },
   methods: {
@@ -271,34 +328,51 @@ export default {
       let result;
       result = await clientGetList();
       if (result.status == 200) {
+        const userEmail = localStorage.getItem("email");
         console.log(result.data);
-        this.itemsClient = result.data;
+        // this.itemsClient = result.data;
+        this.itemsClient = result.data.filter(client => {
+      return client.codven === userEmail;
+      
+    });
+        if (this.roleUser === "user") {
+        console.log("roleUser",this.roleUser)
+        console.log(result.data);
+        this.client = result.data;
+        console.log(this.client);
+          this.clientLogued = this.client.find(
+            client => client.codigo === userEmail
+          );
+          if (this.clientLogued) {
+            console.log("Cliente logueado:", this.clientLogued);
+          } else {
+            console.error("Cliente no encontrado para el email:", userEmail);
+          }
+        }
       } else {
         this.dialog = true;
         this.message = result.message.text;
       }
     },
-    // updateClientData() {
-    //   const client = this.itemsClient.find(
-    //     item => item.id === this.selectedClient
-    //   );
-    //   if (client) {
-    //     this.user.role = "user";
-    //     this.user.address = client.address || "";
-    //     this.user.phone = client.phone || "";
-    //     this.user.name = client.name || "";
-    //     this.user.rif = client.rif || "";
-    //     this.user.codigo = client.codigo || "";
-    //   }
-    //   console.log("client updateClientData", client);
-    // },
+    filterClients(userEmail) {
+      // Filtrar clientes cuyo codven coincide con el userEmail
+      this.filteredClients = this.clients.filter(client => client.vendor.email === userEmail);
+    },
     updateClientData() {
-      this.selectedClientData = this.itemsClient.find(client => client.id === this.selectedClient);
+      this.selectedClientData = this.itemsClient.find(
+        client => client.id === this.selectedClient
+      );
       console.log("Client Data Updated:", this.selectedClientData);
     },
     storeClientData() {
-      localStorage.setItem('selectedClientData', JSON.stringify(this.selectedClientData));
-      console.log("Client Data Stored:", localStorage.getItem('selectedClientData'));
+      localStorage.setItem(
+        "selectedClientData",
+        JSON.stringify(this.selectedClientData)
+      );
+      console.log(
+        "Client Data Stored:",
+        localStorage.getItem("selectedClientData")
+      );
     },
     handleClientChange() {
       this.updateClientData();
@@ -309,18 +383,20 @@ export default {
       this.option = this.$route.params.option;
       if (this.option === 3 || this.option === 2) {
         this.ordersData = this.$route.params.ordersData;
-        console.log('ordersData:', this.ordersData);
-        this.selectedItems = this.ordersData.orderProducts.map(orderProduct => ({
-          id: orderProduct.product.id,
-          codigo: orderProduct.product.codigo,
-          name: orderProduct.product.name,
-          marca: orderProduct.product.marca,
-          cant: orderProduct.product.cant,
-          priceD: orderProduct.product.priceD,
-          priceM: orderProduct.product.priceM,
-          quantity: orderProduct.quantity
-    }));
-        console.log('selectedItems:', this.selectedItems);
+        console.log("ordersData:", this.ordersData);
+        this.selectedItems = this.ordersData.orderProducts.map(
+          orderProduct => ({
+            id: orderProduct.product.id,
+            codigo: orderProduct.product.codigo,
+            name: orderProduct.product.name,
+            marca: orderProduct.product.marca,
+            cant: orderProduct.product.cant,
+            priceD: orderProduct.product.priceD,
+            priceM: orderProduct.product.priceM,
+            quantity: orderProduct.quantity
+          })
+        );
+        console.log("selectedItems:", this.selectedItems);
       }
     },
     data: async function() {
@@ -335,7 +411,6 @@ export default {
         this.message = result.message.text;
       }
     },
-
     async confirmOrder() {
       console.log("confirmOrder called");
       if (this.selectedItems.length === 0) {
@@ -344,33 +419,48 @@ export default {
         return;
       }
       try {
-        let orderData={};
-        if (!this.user) {
-      // Carga la información del usuario si no está disponible
-      this.user = JSON.parse(localStorage.getItem('user')) || {};
-    }
+        let orderData = {};
+        const userEmail = localStorage.getItem("email") || "";
+        const currentDate = new Date().toISOString();
+
         if (this.roleUser === "user") {
           orderData = {
-            codigo: "10",
-            nameCli: this.clientName,
+            codigo: "00000007", // Asigna el código si es necesario o quítalo si no se usa
+            nameCli: this.clientLogued.name,
             priceTotal: this.totalOrderPrice.toString(),
-            userId: this.clientID,
+            userEmail: userEmail,
             products: this.selectedItems.map(item => ({
               productId: item.id,
               quantity: item.quantity
-            }))
+            })),
+            cliente: userEmail,
+            nomCli: this.clientName,
+            rif: this.clientLogued.rif,
+            codven: this.clientLogued.codven,
+            comen1: "Comentario 1 test",
+            comen2: "Comentario 2 test",
+            dtot_ped: this.totalOrderPrice.toString()
           };
+          console.log("order data client:", orderData);
         } else if (this.roleUser === "tecnico" && this.selectedClientData) {
           orderData = {
             codigo: this.selectedClientData.rif,
             nameCli: this.selectedClientData.name,
             priceTotal: this.totalOrderPrice.toString(),
-            userId: this.clientID,
+            userEmail: userEmail,
             products: this.selectedItems.map(item => ({
               productId: item.id,
               quantity: item.quantity
-            }))
+            })),
+            cliente: this.selectedClientData.codigo,
+            nomCli: this.selectedClientData.name,
+            rif: this.selectedClientData.rif,
+            codven: userEmail,
+            comen1: "Comentario 1 test",
+            comen2: "Comentario 2 test",
+            dtot_ped: this.totalOrderPrice.toString()
           };
+          console.log("order data vendor:", orderData);
         } else {
           this.snackbar = true;
           this.message = "Por favor, selecciona un cliente válido";
@@ -383,7 +473,7 @@ export default {
         const response = await createorder(orderData);
         console.log("API response:", response);
         if (response.status === 201) {
-          console.log("order enviada exitosamente");
+          console.log("Order enviada exitosamente");
           this.snackbar = true;
           this.message = "Pedido realizado exitosamente";
 
@@ -401,7 +491,6 @@ export default {
         this.message = "Ocurrió un error al conectarse con el servidor";
       }
     },
-  
     toggleProduct(item) {
       if (item.selected) {
         this.selectedItems.push({ ...item, quantity: item.quantity || 1 });
@@ -415,7 +504,7 @@ export default {
       const maxQuantity = item.cant;
       if (item.quantity > maxQuantity) {
         item.errorMessages = [`Máximo disponible: ${maxQuantity}`];
-        item.quantity = maxQuantity; 
+        item.quantity = maxQuantity;
       } else {
         item.errorMessages = [];
       }
