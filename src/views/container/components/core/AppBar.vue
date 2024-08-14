@@ -29,7 +29,7 @@
     <v-spacer />
     
     <v-toolbar-title class="hidden-sm-and-down">
-     Bienvenido {{ name }} {{ lastname }}
+     Bienvenido {{ name }}
     </v-toolbar-title>
     
 
