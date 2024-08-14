@@ -195,11 +195,11 @@
         //   value: 'role',
         // },
         
-        {
-          sortable: false,
-          text: 'Acciones',
-          value: 'actions',
-        },
+        // {
+        //   sortable: false,
+        //   text: 'Acciones',
+        //   value: 'actions',
+        // },
       ],
       items: [ ],
       search: undefined,

@@ -40,16 +40,19 @@
         >
           <v-card-title>
             <v-row>
-              <v-col cols="12" md="4"
-                ><strong>Número de Pedido:</strong>
+              <v-col cols="12" md="3"
+                ><strong>Nro del Pedido:</strong>
                 {{ ordersData.codigo }}</v-col
               >
               <v-col cols="12" md="4"
                 ><strong>Fecha:</strong>
                 {{ formatDate(ordersData.createdAt) }}</v-col
               >
-              <v-col cols="12" md="4"
+              <v-col cols="12" md="3"
                 ><strong>Cliente:</strong> {{ ordersData.cliente }}</v-col
+              >
+              <v-col cols="12" md="2"
+                ><strong>Estatus:</strong> {{ ordersData.status }}</v-col
               >
               <v-col cols="12" md="4"
                 ><strong>Nombre Cliente:</strong>
@@ -64,7 +67,7 @@
               </v-col> -->
               <v-col cols="12" md="4" v-if="roleUser === `tecnico`">
               <strong>Código Vendedor:</strong>
-                {{ orderData.codven }}
+                {{ ordersData.codven }}
               </v-col>
               <v-col cols="12" md="4"
                 ><strong>Comentario 1:</strong> {{ ordersData.comen1 }}</v-col
@@ -314,8 +317,9 @@ export default {
     },
   },
   mounted() {
-    this.initialize(), this.data();
-    this.getListClient();
+    this.initialize(), 
+    this.data(),
+    this.getListClient()
   },
   methods: {
     formatDate(dateString) {
@@ -331,12 +335,16 @@ export default {
         const userEmail = localStorage.getItem("email");
         console.log(result.data);
         // this.itemsClient = result.data;
-        this.itemsClient = result.data.filter(client => {
-      return client.codven === userEmail;
-      
-    });
-        if (this.roleUser === "user") {
         console.log("roleUser",this.roleUser)
+
+        if (this.roleUser === "tecnico"){
+          this.itemsClient = result.data.filter(client => {
+            return client.codven === userEmail;
+          });
+          console.log(this.itemsClient)
+        }
+        
+        if (this.roleUser === "user") {
         console.log(result.data);
         this.client = result.data;
         console.log(this.client);
@@ -381,7 +389,9 @@ export default {
 
     initialize() {
       this.option = this.$route.params.option;
+
       if (this.option === 3 || this.option === 2) {
+        console.log(this.option)
         this.ordersData = this.$route.params.ordersData;
         console.log("ordersData:", this.ordersData);
         this.selectedItems = this.ordersData.orderProducts.map(
@@ -425,7 +435,7 @@ export default {
 
         if (this.roleUser === "user") {
           orderData = {
-            codigo: "00000007", // Asigna el código si es necesario o quítalo si no se usa
+            // codigo: "00000007", // Asigna el código si es necesario o quítalo si no se usa
             nameCli: this.clientLogued.name,
             priceTotal: this.totalOrderPrice.toString(),
             userEmail: userEmail,
@@ -437,14 +447,15 @@ export default {
             nomCli: this.clientName,
             rif: this.clientLogued.rif,
             codven: this.clientLogued.codven,
-            comen1: "Comentario 1 test",
-            comen2: "Comentario 2 test",
+            comen1: "",
+            comen2: "",
+            status: "PE",
             dtot_ped: this.totalOrderPrice.toString()
           };
           console.log("order data client:", orderData);
         } else if (this.roleUser === "tecnico" && this.selectedClientData) {
           orderData = {
-            codigo: this.selectedClientData.rif,
+            // codigo: this.selectedClientData.rif,
             nameCli: this.selectedClientData.name,
             priceTotal: this.totalOrderPrice.toString(),
             userEmail: userEmail,
@@ -456,8 +467,9 @@ export default {
             nomCli: this.selectedClientData.name,
             rif: this.selectedClientData.rif,
             codven: userEmail,
-            comen1: "Comentario 1 test",
-            comen2: "Comentario 2 test",
+            comen1: "",
+            comen2: "",
+            status: "PE",
             dtot_ped: this.totalOrderPrice.toString()
           };
           console.log("order data vendor:", orderData);
@@ -546,7 +558,7 @@ export default {
 
 <style>
 .lbl {
-  padding: 0.5em;
+  padding: 0.1em;
   margin: auto;
 }
 </style>

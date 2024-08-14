@@ -28,8 +28,8 @@
       <v-data-table
         :headers="headers"
         :items="filteredItems"
-        :search.sync="search"
-        :sort-by="['id', 'titulo']"
+        :search="search"
+        :sort-by="['codigo', 'createdAt', 'priceTotal', 'status' ]"
         :sort-desc="[false, true]"
         multi-sort
         class="elevation-1"
@@ -39,6 +39,15 @@
         </template>
         <template v-slot:[`item.createdAt`]="{ item }">
           {{ formatDate(item.createdAt) }}
+        </template>
+        <template v-slot:[`item.status`]="{ item }">
+          <v-chip
+            :color="item.status === 'PE' ? 'yellow' : 'green'"
+            text-color="black"
+            dark
+          >
+            {{ item.status === 'PE' ? 'Pendiente' : 'Recibido' }}
+          </v-chip>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
           <v-btn
@@ -76,6 +85,23 @@
           </v-btn>-->
         </template>
       </v-data-table>
+      <v-card-text style="height: 100px; position: relative">
+        <v-fab-transition>
+          <v-btn
+            fab
+            dark
+            large
+            color="grenndark"
+            fixed
+            right
+            
+            v-if="this.roleUser!==`admin`"
+            @click="create"
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </v-fab-transition>
+      </v-card-text>
 
       <div class="text-center">
         <v-snackbar v-model="snackbar" :timeout="timeout" color="#75B768">
@@ -106,23 +132,7 @@
         </v-card>
       </v-dialog> -->
 
-      <v-card-text style="height: 100px; position: relative">
-        <v-fab-transition>
-          <v-btn
-            fab
-            dark
-            large
-            color="grenndark"
-            fixed
-            right
-            
-            v-if="this.roleUser!==`admin`"
-            @click="create"
-          >
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </v-fab-transition>
-      </v-card-text>
+
     </base-material-card>
   </v-container>
 </template>
@@ -147,15 +157,17 @@ export default {
       // },
       {
         text: "Nombre del cliente",
-        value: "nameCli"
+        value: "nameCli",
+        sortable: false,
       },
       {
         text: "Codigo del cliente",
-        value: "cliente"
+        value: "cliente",
+        sortable: false,
       },
       {
-        text: "Rif",
-        value: "codigo"
+        text: "Nro Pedido",
+        value: "codigo",
       },
       {
         text: "Monto total",
@@ -164,6 +176,10 @@ export default {
       {
         text: "Fecha",
         value: "createdAt"
+      },
+      {
+        text: "Estatus",
+        value: "status"
       },
       {
         sortable: false,
