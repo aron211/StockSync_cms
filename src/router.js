@@ -22,11 +22,9 @@ function AuthorizationFunction(to, from, next) {
 
   // Comprobar si el rol del usuario tiene permiso para la ruta solicitada
   if (rolePermissions[userRole] && rolePermissions[userRole].includes(to.name)) {
-    console.log("tiene permiso", userRole)
     next(); // El usuario tiene permiso, permitir el acceso
   } else {
     // El usuario no tiene permiso, redirigir a la página de error o acceso denegado
-    console.log("No tiene permiso", userRole)
     next({ name: 'Error' });
   }
 }
