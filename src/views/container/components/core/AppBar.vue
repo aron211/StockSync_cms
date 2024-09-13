@@ -32,11 +32,15 @@
       Bienvenido {{ name }}
     </v-toolbar-title>
 
+    <v-toolbar-title class="hidden-md-and-up title-navbar">
+      Bienvenido {{ name }}
+    </v-toolbar-title>
+
     <div class="mx-3" />
 
-    <v-btn min-width="0" text>
+    <!-- <v-btn min-width="0" text>
       <v-icon>mdi-view-dashboard</v-icon>
-    </v-btn>
+    </v-btn> -->
 
     <v-menu
       bottom
@@ -159,3 +163,8 @@ export default {
   }
 };
 </script>
+<style scoped>
+.title-navbar{
+  font-size: 15px;
+}
+</style>

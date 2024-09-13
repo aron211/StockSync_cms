@@ -152,6 +152,7 @@
           class="elevation-1"
         >
           <template v-slot:item.actions="{ item }">
+            <div class="d-flex align-center">
             <v-checkbox
               v-model="item.selected"
               :disabled="item.cant <= 0"
@@ -172,6 +173,7 @@
               @input="validateQuantity(item)"
               :error-messages="item.errorMessages"
             ></v-text-field>
+          </div>
           </template>
         </v-data-table>
         <v-divider class="mt-10" />
