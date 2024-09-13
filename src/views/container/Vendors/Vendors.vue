@@ -1,8 +1,5 @@
 <template>
-  <v-container
-    id="data-tables"
-    tag="section"
-  >
+  <v-container id="data-tables" tag="section">
     <base-material-card
       icon="mdi-account-group"
       color="greenligth"
@@ -53,10 +50,7 @@
             x-small
             @click="show(item)"
           >
-            <v-icon
-              small
-              v-text="'mdi-eye'"
-            />
+            <v-icon small v-text="'mdi-eye'" />
           </v-btn>
           <v-btn
             :key="2"
@@ -66,10 +60,7 @@
             x-small
             @click="edit(item)"
           >
-            <v-icon
-              small
-              v-text="'mdi-pencil'"
-            />
+            <v-icon small v-text="'mdi-pencil'" />
           </v-btn>
           <v-btn
             :key="3"
@@ -79,59 +70,33 @@
             x-small
             @click="deleteVendor(item)"
           >
-            <v-icon
-              small
-              v-text="'mdi-delete'"
-            />
+            <v-icon small v-text="'mdi-delete'" />
           </v-btn>
         </template>
       </v-data-table>
 
       <div class="text-center">
-        <v-snackbar
-          v-model="snackbar"
-          :timeout="timeout"
-          color="#75B768"
-        >
+        <v-snackbar v-model="snackbar" :timeout="timeout" color="#75B768">
           {{ message }}
 
           <template v-slot:action="{ attrs }">
-            <v-btn
-              color="white"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
+            <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
               Close
             </v-btn>
           </template>
         </v-snackbar>
       </div>
-      <v-dialog
-        v-model="dialogDelete"
-        persistent
-        max-width="500px"
-      >
+      <v-dialog v-model="dialogDelete" persistent max-width="500px">
         <v-card>
-          <v-card-title
-            class="text-h5"
-          >
+          <v-card-title class="text-h5">
             Estas seguro que deseas eliminar este Vendedor?
           </v-card-title>
           <v-card-actions>
             <v-spacer />
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="closeDelete"
-            >
+            <v-btn color="blue darken-1" text @click="closeDelete">
               Cancelar
             </v-btn>
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="deleteItemConfirm"
-            >
+            <v-btn color="blue darken-1" text @click="deleteItemConfirm">
               OK
             </v-btn>
             <v-spacer />
@@ -139,7 +104,7 @@
         </v-card>
       </v-dialog>
 
-      <v-card-text style="height: 100px; position: relative">
+      <!-- <v-card-text style="height: 100px; position: relative">
         <v-fab-transition>
           <v-btn
             fab
@@ -154,145 +119,130 @@
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </v-fab-transition>
-      </v-card-text>
+      </v-card-text> -->
     </base-material-card>
   </v-container>
 </template>
 
-  <script>
-  import i18n from '@/i18n'
-  import { vendorGetList ,deleteVendor} from '../../../api/modules/vendor'
-  export default {
-    name: 'DashboardDataTables',
-    data: () => ({
-      dialogDelete: false,
-      timeout:0,
-      snackbar: false,
-      message: '',
-      hidden: false,
-      id: null,
-      headers: [
-       
-        {
-          text: 'Código',
-          value: 'codven',
-        },
-        {
-          text: 'Nombre',
-          value: 'name',
-        },
-        {
-          text: 'Email',
-          value: 'email',
-        },
-        // {
-        //   text: 'Telefono',
-        //   value: 'phone',
-        // },
-       
-        // {
-        //   text: i18n.t('users.rol'),
-        //   value: 'role',
-        // },
-        
-        // {
-        //   sortable: false,
-        //   text: 'Acciones',
-        //   value: 'actions',
-        // },
-      ],
-      items: [ ],
-      search: undefined,
+<script>
+import i18n from "@/i18n";
+import { vendorGetList, deleteVendor } from "../../../api/modules/vendor";
+export default {
+  name: "DashboardDataTables",
+  data: () => ({
+    dialogDelete: false,
+    timeout: 0,
+    snackbar: false,
+    message: "",
+    hidden: false,
+    id: null,
+    headers: [
+      {
+        text: "Código",
+        value: "codven"
+      },
+      {
+        text: "Nombre",
+        value: "name"
+      },
+      {
+        text: "Email",
+        value: "email"
+      }
+      // {
+      //   text: 'Telefono',
+      //   value: 'phone',
+      // },
 
-    }),
+      // {
+      //   text: i18n.t('users.rol'),
+      //   value: 'role',
+      // },
 
+      // {
+      //   sortable: false,
+      //   text: 'Acciones',
+      //   value: 'actions',
+      // },
+    ],
+    items: [],
+    search: undefined
+  }),
 
-    mounted () {
-      this.data()
+  mounted() {
+    this.data();
+  },
+
+  methods: {
+    data: async function() {
+      let result;
+      result = await vendorGetList();
+      if (result.status == 200) {
+        this.items = result.data;
+      } else {
+        this.dialog = true;
+        this.message = result.message.text;
+      }
     },
-
-    methods: {
-      data: async function () {
-        let result
-        result = await vendorGetList()
-        if (result.status==200) {
-         console.log(result.data)
-         this.items = result.data
-        } else {
-        
-         this.dialog = true;
-         this.message = result.message.text;
+    create() {
+      this.$router.push({
+        name: "VendorsForm",
+        params: {
+          option: 1 // option 1 to create
         }
-
-      },
-      create () {
-        this.$router.push({
-          name: 'VendorsForm',
-          params: {
-            option: 1, // option 1 to create
-          },
-        })
-      },
-      show (item) {
-        console.log(item)
-        this.$router.push({
-          name: 'VendorsForm',
-          params: {
-            option: 2, // option 2 to show
-            vendorsData: item,
-          },
-        })
-      },
-      edit (item) {
-        console.log(item)
-        this.$router.push({
-          name: 'VendorsForm',
-          params: {
-            option: 3, // option 3 to edit
-            vendorsData: item,
-          },
-        })
-      },
-      deleteVendor (item) {
-        this.idVendor = item.id
-        this.dialogDelete = true
-      },
-      closeDelete () {
-        this.dialogDelete = false
-      },
-
-    
-        async deleteItemConfirm () {
-          let result
-          result = await deleteVendor(this.idVendor)
-          
-          if (result.status === 200) {
-         
-            this.dialogDelete = false
-            this.snackbar = true
-            this.message = 'Eliminación exitosa'
-           
-            setTimeout(() => {
-             
-              this.snackbar = false
-            }, 1000)
-            this.data()
-          } else {
-            console.log("ocurrio un error")
-            this.snackbar = true
-            this.data();
-            this.dialogDelete = false
-            this.message = 'ocurrio un error al eliminar al usuario'
-            setTimeout(() => {
-              this.snackbar = false
-            }, 1000)
-          }
-        },
+      });
+    },
+    show(item) {
+      this.$router.push({
+        name: "VendorsForm",
+        params: {
+          option: 2, // option 2 to show
+          vendorsData: item
+        }
+      });
+    },
+    edit(item) {
+      this.$router.push({
+        name: "VendorsForm",
+        params: {
+          option: 3, // option 3 to edit
+          vendorsData: item
+        }
+      });
+    },
+    deleteVendor(item) {
+      this.idVendor = item.id;
+      this.dialogDelete = true;
+    },
+    closeDelete() {
+      this.dialogDelete = false;
     },
 
+    async deleteItemConfirm() {
+      let result;
+      result = await deleteVendor(this.idVendor);
+
+      if (result.status === 200) {
+        this.dialogDelete = false;
+        this.snackbar = true;
+        this.message = "Eliminación exitosa";
+
+        setTimeout(() => {
+          this.snackbar = false;
+        }, 1000);
+        this.data();
+      } else {
+        this.snackbar = true;
+        this.data();
+        this.dialogDelete = false;
+        this.message = "ocurrio un error al eliminar al usuario";
+        setTimeout(() => {
+          this.snackbar = false;
+        }, 1000);
+      }
+    }
   }
-  </script>
+};
+</script>
 
-  <style>
-
-  </style>
+<style></style>

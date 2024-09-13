@@ -1,8 +1,5 @@
 <template>
-  <v-container
-    id="data-tables"
-    tag="section"
-  >
+  <v-container id="data-tables" tag="section">
     <base-material-card
       icon="mdi-account-group"
       color="greenligth"
@@ -44,7 +41,7 @@
         multi-sort
         class="elevation-1"
       >
-        <template v-slot:[`item.actions`]="{ item }">
+        <!-- <template v-slot:[`item.actions`]="{ item }">
           <v-btn
             :key="1"
             color="gray"
@@ -53,12 +50,9 @@
             x-small
             @click="show(item)"
           >
-            <v-icon
-              small
-              v-text="'mdi-eye'"
-            />
+            <v-icon small v-text="'mdi-eye'" />
           </v-btn>
-          <!-- <v-btn
+          <v-btn
             :key="2"
             color="four"
             fab
@@ -83,61 +77,38 @@
               small
               v-text="'mdi-delete'"
             />
-          </v-btn> -->
-        </template>
+          </v-btn>
+        </template> -->
       </v-data-table>
 
-      <div class="text-center">
-        <v-snackbar
-          v-model="snackbar"
-          :timeout="timeout"
-          color="#75B768"
-        >
+      <!-- <div class="text-center">
+        <v-snackbar v-model="snackbar" :timeout="timeout" color="#75B768">
           {{ message }}
 
           <template v-slot:action="{ attrs }">
-            <v-btn
-              color="white"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
+            <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
               Close
             </v-btn>
           </template>
         </v-snackbar>
       </div>
-      <v-dialog
-        v-model="dialogDelete"
-        persistent
-        max-width="500px"
-      >
+      <v-dialog v-model="dialogDelete" persistent max-width="500px">
         <v-card>
-          <v-card-title
-            class="text-h5"
-          >
+          <v-card-title class="text-h5">
             Estas seguro que deseas eliminar este Cliente?
           </v-card-title>
           <v-card-actions>
             <v-spacer />
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="closeDelete"
-            >
+            <v-btn color="blue darken-1" text @click="closeDelete">
               Cancelar
             </v-btn>
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="deleteItemConfirm"
-            >
+            <v-btn color="blue darken-1" text @click="deleteItemConfirm">
               OK
             </v-btn>
             <v-spacer />
           </v-card-actions>
         </v-card>
-      </v-dialog>
+      </v-dialog> -->
 
       <!-- <v-card-text style="height: 100px; position: relative">
         <v-fab-transition>
@@ -159,153 +130,139 @@
   </v-container>
 </template>
 
-  <script>
-  import i18n from '@/i18n'
-  import { clientGetList ,deleteUser} from '../../../api/modules/client'
-  import { inventoryGetList} from '../../../api/modules/inventory'
-  export default {
-    name: 'DashboardDataTables',
-    data: () => ({
-      dialogDelete: false,
-      timeout:0,
-      snackbar: false,
-      message: '',
-      hidden: false,
-      id: null,
-      headers: [
-       
-        {
-          text: 'Código',
-          value: 'codigo',
-        },
-        {
-          text: 'Nombre',
-          value: 'name',
-        },
-        {
-          text: 'Marca',
-          value: 'marca',
-        },
-        {
-          text: 'cantidad',
-          value: 'cant',
-        },
-        {
-          text: 'Precio al Detal',
-          value: 'priceD',
-        },
-        {
-          text: 'Precio al Mayor',
-          value: 'priceM',
-        },
-        // {
-        //   text: 'País',
-        //   value: 'country',
-        // },
-       
-        // {
-        //   text: i18n.t('users.rol'),
-        //   value: 'role',
-        // },
-        
-        // {
-        //   sortable: false,
-        //   text: 'Acciones',
-        //   value: 'actions',
-        // },
-      ],
-      items: [ ],
-      search: undefined,
+<script>
+import i18n from "@/i18n";
+import { inventoryGetList } from "../../../api/modules/inventory";
+export default {
+  name: "DashboardDataTables",
+  data: () => ({
+    // dialogDelete: false,
+    timeout: 0,
+    snackbar: false,
+    message: "",
+    hidden: false,
+    id: null,
+    headers: [
+      {
+        text: "Código",
+        value: "codigo"
+      },
+      {
+        text: "Nombre",
+        value: "name"
+      },
+      {
+        text: "Marca",
+        value: "marca"
+      },
+      {
+        text: "cantidad",
+        value: "cant"
+      },
+      {
+        text: "Precio al Detal",
+        value: "priceD"
+      },
+      {
+        text: "Precio al Mayor",
+        value: "priceM"
+      }
+      // {
+      //   text: 'País',
+      //   value: 'country',
+      // },
 
-    }),
+      // {
+      //   text: i18n.t('users.rol'),
+      //   value: 'role',
+      // },
 
+      // {
+      //   sortable: false,
+      //   text: 'Acciones',
+      //   value: 'actions',
+      // },
+    ],
+    items: [],
+    search: undefined
+  }),
 
-    mounted () {
-      this.data()
+  mounted() {
+    this.data();
+  },
+
+  methods: {
+    data: async function() {
+      let result;
+      result = await inventoryGetList();
+      if (result.status == 200) {
+        this.items = result.data;
+      } else {
+        this.dialog = true;
+        this.message = result.message.text;
+      }
     },
+    // create() {
+    //   this.$router.push({
+    //     name: "InventoryForm",
+    //     params: {
+    //       option: 1 // option 1 to create
+    //     }
+    //   });
+    // },
+    // show(item) {
+    //   this.$router.push({
+    //     name: "InventoryForm",
+    //     params: {
+    //       option: 2, // option 2 to show
+    //       usersData: item
+    //     }
+    //   });
+    // },
+    // edit(item) {
+    //   this.$router.push({
+    //     name: "ClientsForm",
+    //     params: {
+    //       option: 3, // option 3 to edit
+    //       usersData: item
+    //     }
+    //   });
+    // },
+    // deleteuser (item) {
+    //   this.iduser = item.id
+    //   this.dialogDelete = true
+    // },
+    // closeDelete() {
+    //   this.dialogDelete = false;
+    // }
 
-    methods: {
-      data: async function () {
-        let result
-        result = await inventoryGetList()
-        if (result.status==200) {
-         console.log(result.data)
-         this.items = result.data
-        } else {
-        
-         this.dialog = true;
-         this.message = result.message.text;
-        }
+    // async deleteItemConfirm () {
+    //   let result
+    //   result = await deleteUser(this.iduser)
 
-      },
-      create () {
-        this.$router.push({
-          name: 'InventoryForm',
-          params: {
-            option: 1, // option 1 to create
-          },
-        })
-      },
-      show (item) {
-        console.log(item)
-        this.$router.push({
-          name: 'InventoryForm',
-          params: {
-            option: 2, // option 2 to show
-            usersData: item,
-          },
-        })
-      },
-      edit (item) {
-        console.log(item)
-        this.$router.push({
-          name: 'ClientsForm',
-          params: {
-            option: 3, // option 3 to edit
-            usersData: item,
-          },
-        })
-      },
-      deleteuser (item) {
-        this.iduser = item.id
-        this.dialogDelete = true
-      },
-      closeDelete () {
-        this.dialogDelete = false
-      },
+    //   if (result.status === 200) {
 
-    
-        async deleteItemConfirm () {
-          let result
-          result = await deleteUser(this.iduser)
-          
-          if (result.status === 200) {
-         
-            this.dialogDelete = false
-            this.snackbar = true
-            this.message = 'Eliminación exitosa'
-           
-            setTimeout(() => {
-             
-              this.snackbar = false
-            }, 1000)
-            this.data()
-          } else {
-            console.log("ocurrio un error")
-            this.snackbar = true
-            this.data();
-            this.dialogDelete = false
-            this.message = 'ocurrio un error al eliminar al usuario'
-            setTimeout(() => {
-              this.snackbar = false
-            }, 1000)
-          }
-        },
-    },
+    //     this.dialogDelete = false
+    //     this.snackbar = true
+    //     this.message = 'Eliminación exitosa'
 
+    //     setTimeout(() => {
+
+    //       this.snackbar = false
+    //     }, 1000)
+    //     this.data()
+    //   } else {
+    //     this.snackbar = true
+    //     this.data();
+    //     this.dialogDelete = false
+    //     this.message = 'ocurrio un error al eliminar al usuario'
+    //     setTimeout(() => {
+    //       this.snackbar = false
+    //     }, 1000)
+    //   }
+    // },
   }
-  </script>
+};
+</script>
 
-  <style>
-
-  </style>
+<style></style>

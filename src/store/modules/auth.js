@@ -1,43 +1,41 @@
-import { LOGIN_USER, LOGOUT_USER, UPDATE_PERSON } from '../mutation-types'
+import { LOGIN_USER, LOGOUT_USER, UPDATE_PERSON } from "../mutation-types";
 
-import {
-  loginApi,
-} from '@/api/modules'
+import { loginApi } from "@/api/modules";
 
- import router from '../../router'
+import router from "../../router";
 
 const initialState = {
   user: {
-    person: {},
+    person: {}
   },
-  logged: false,
-}
+  logged: false
+};
 
 const state = {
-  ...initialState,
-}
+  ...initialState
+};
 
 const getters = {
   user: state => state.user,
-  logged: state => state.logged,
-}
+  logged: state => state.logged
+};
 
 const mutations = {
   [LOGIN_USER]: (state, payload) => {
-    state.user = payload
-    state.logged = true
+    state.user = payload;
+    state.logged = true;
   },
   [LOGOUT_USER]: state => {
-    state.user = initialState.user
-    state.logged = initialState.logged
+    state.user = initialState.user;
+    state.logged = initialState.logged;
   },
   [UPDATE_PERSON]: (state, payload) => {
     state.user.person = {
       ...state.user.person,
-      ...payload,
-    }
-  },
-}
+      ...payload
+    };
+  }
+};
 
 // const savePersonId = async email => {
 //   console.log(email)
@@ -49,22 +47,22 @@ const mutations = {
 // }
 
 const actions = {
-   async loginAction ({ commit }, payload) {
-    let serviceResponse = await loginApi(payload)
-    console.log(serviceResponse)
+  async loginAction({ commit }, payload) {
+    let serviceResponse = await loginApi(payload);
+    // console.log(serviceResponse)
     if (serviceResponse.ok) {
-        commit(LOGIN_USER, serviceResponse.data)
-        localStorage.setItem('user_id', serviceResponse.data.id)
-        localStorage.setItem('email', serviceResponse.data.email)
-        localStorage.setItem('password', payload.password)
-        localStorage.setItem('token', serviceResponse.data.token)
-        router.push({ name: 'Dashboard' })
+      commit(LOGIN_USER, serviceResponse.data);
+      localStorage.setItem("user_id", serviceResponse.data.id);
+      localStorage.setItem("email", serviceResponse.data.email);
+      localStorage.setItem("password", payload.password);
+      localStorage.setItem("token", serviceResponse.data.token);
+      router.push({ name: "Dashboard" });
     } else {
-      const params = { text: serviceResponse.message.text }
-      window.getApp.$emit('SHOW_ERROR', params)
-      router.push({ name: 'Login' })
+      const params = { text: serviceResponse.message.text };
+      window.getApp.$emit("SHOW_ERROR", params);
+      router.push({ name: "Login" });
     }
-  },
+  }
   // logoutAction ({ commit, dispatch }) {
   //   localStorage.clear()
   //   commit(LOGOUT_USER)
@@ -99,11 +97,11 @@ const actions = {
   //     window.getApp.$emit('SHOW_ERROR', params)
   //   }
   // },
-}
+};
 
 export default {
   state,
   getters,
   mutations,
-  actions,
-}
+  actions
+};

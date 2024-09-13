@@ -1,9 +1,5 @@
 <template>
-  <v-container
-    id="promotions-profile"
-    fluid
-    tag="section"
-  >
+  <v-container id="promotions-profile" fluid tag="section">
     <v-row justify="center">
       <base-material-card icon="mdi-account-outline">
         <template v-slot:heading>
@@ -37,16 +33,9 @@
             </v-btn>
           </v-fab-transition>
         </v-card-text>
-        <v-tabs-items
-          v-model="tabs"
-          class="transparent"
-        >
+        <v-tabs-items v-model="tabs" class="transparent">
           <v-tab-item :kei="0">
-            <v-form
-              ref="form"
-
-              lazy-validation
-            >
+            <v-form ref="form" lazy-validation>
               <v-container class="py-0">
                 <v-row>
                   <v-col cols="7">
@@ -86,10 +75,7 @@
                       :readonly="option === 2 ? true : false"
                     />
                   </v-col>
-                  <v-col
-                    cols="12"
-                    class="text-right"
-                  >
+                  <v-col cols="12" class="text-right">
                     <v-btn
                       v-if="option !== 2"
                       color="success"
@@ -131,133 +117,129 @@
 </template>
 
 <script>
-  import i18n from '@/i18n'
-  import { createpromotions, updatepromotions } from '../../../api/modules/promotions'
-  export default {
-
-    data: () => ({
-      tabs: 0,
-      option: 0,
-      title: '',
-      snackbar: '',
-      message: '',
-      promotionsData: {
-        id:'',
-        titulo:'',
-        type:'',
-        description:'',
-      },
-      types:[
-        {
-          name:"Instalacion"
-        },
-        {
-          name:"Mantenimiento"
-        },
-        {
-          name:"Reparación"
-        }
-      ]
-
-    }),
-    computed: {
-      getTitle () {
-        if (this.option === 1) return i18n.t('promotions.create')
-        else if (this.option === 2) return i18n.t('promotions.show')
-        else if (this.option === 3) return i18n.t('promotions.edit')
-        else return i18n.t('promotions.head')
-      },
-      getTitleButton () {
-        if (this.option === 1) return i18n.t('crud.create')
-        else if (this.option === 2) return i18n.t('crud.show')
-        else if (this.option === 3) return i18n.t('crud.edit')
-        else return i18n.t('promotions.head')
-      },
+import i18n from "@/i18n";
+import {
+  createpromotions,
+  updatepromotions
+} from "../../../api/modules/promotions";
+export default {
+  data: () => ({
+    tabs: 0,
+    option: 0,
+    title: "",
+    snackbar: "",
+    message: "",
+    promotionsData: {
+      id: "",
+      titulo: "",
+      type: "",
+      description: ""
     },
-    mounted () {
-      this.initialize()
+    types: [
+      {
+        name: "Instalacion"
+      },
+      {
+        name: "Mantenimiento"
+      },
+      {
+        name: "Reparación"
+      }
+    ]
+  }),
+  computed: {
+    getTitle() {
+      if (this.option === 1) return i18n.t("promotions.create");
+      else if (this.option === 2) return i18n.t("promotions.show");
+      else if (this.option === 3) return i18n.t("promotions.edit");
+      else return i18n.t("promotions.head");
     },
-    methods: {
-      async submit () {
-        if (this.option === 1) {
-          if (this.$refs.form.validate()) {
+    getTitleButton() {
+      if (this.option === 1) return i18n.t("crud.create");
+      else if (this.option === 2) return i18n.t("crud.show");
+      else if (this.option === 3) return i18n.t("crud.edit");
+      else return i18n.t("promotions.head");
+    }
+  },
+  mounted() {
+    this.initialize();
+  },
+  methods: {
+    async submit() {
+      if (this.option === 1) {
+        if (this.$refs.form.validate()) {
+          let promotion = {
+            titulo: this.promotionsData.titulo,
+            type: this.promotionsData.type,
+            description: this.promotionsData.description,
+            status: "Activo"
+          };
 
-            let promotion = {
-              titulo: this.promotionsData.titulo,
-              type: this.promotionsData.type,
-              description: this.promotionsData.description,
-              status: "Activo"
+          promotion = await createpromotions(promotion);
 
-            }
-
-            promotion = await createpromotions(promotion)
-
-            if (promotion.status == 201) {
-              this.snackbar = true
-              this.message = 'Registro exitoso'
-              setTimeout(() => {
-                this.$router.push({ name: 'Promotions' })
-              }, 2000)
-            } else {
-              this.snackbar = true
-              this.message = 'Hubo un error durante el registro'
-              setTimeout(() => {
-                this.snackbar = false
-              }, 1000)
-            }
-
-          } else {
-            this.snackbar = true
-            this.message = 'Debe llenar todos los campos requeridos'
+          if (promotion.status == 201) {
+            this.snackbar = true;
+            this.message = "Registro exitoso";
             setTimeout(() => {
-              this.snackbar = false
-            }, 1000)
-          }
-        }  
-        if (this.option === 3) {
-          if (this.$refs.form.validate()) {
-
-            let id = this.promotionsData.id
-            let promotion = {
-              titulo: this.promotionsData.titulo,
-              type: this.promotionsData.type,
-              description: this.promotionsData.description,
-              status:this.promotionsData.status
-            }
-            
-            
-            promotion = await updatepromotions(promotion, id)
-            console.log('que trae ', promotion)
-            if (promotion.status == 200) {
-              this.snackbar = true
-              this.message = 'Actualizacion exitosa'
-              setTimeout(() => {
-                this.$router.push({ name: 'Promotions' })
-              }, 2000)
-            } else {
-              this.snackbar = true
-              this.message = 'Hubo un error durante la actualizacion'
-              setTimeout(() => {
-                this.snackbar = false
-              }, 1000)
-            }
+              this.$router.push({ name: "Promotions" });
+            }, 2000);
           } else {
-            this.snackbar = true
-            this.message = 'Debe llenar todos los campos requeridos'
+            this.snackbar = true;
+            this.message = "Hubo un error durante el registro";
             setTimeout(() => {
-              this.snackbar = false
-            }, 1000)
+              this.snackbar = false;
+            }, 1000);
           }
+        } else {
+          this.snackbar = true;
+          this.message = "Debe llenar todos los campos requeridos";
+          setTimeout(() => {
+            this.snackbar = false;
+          }, 1000);
         }
-      },
-      initialize () {
-        this.option = this.$route.params.option
-        if (this.option === 3 || this.option === 2) {
-          this.promotionsData = this.$route.params.promotionsData
+      }
+      if (this.option === 3) {
+        if (this.$refs.form.validate()) {
+          let id = this.promotionsData.id;
+          let promotion = {
+            titulo: this.promotionsData.titulo,
+            type: this.promotionsData.type,
+            description: this.promotionsData.description,
+            status: this.promotionsData.status
+          };
+
+          promotion = await updatepromotions(promotion, id);
+          // console.log('que trae ', promotion)
+          if (promotion.status == 200) {
+            this.snackbar = true;
+            this.message = "Actualizacion exitosa";
+            setTimeout(() => {
+              this.$router.push({ name: "Promotions" });
+            }, 2000);
+          } else {
+            this.snackbar = true;
+            this.message = "Hubo un error durante la actualizacion";
+            setTimeout(() => {
+              this.snackbar = false;
+            }, 1000);
+          }
+        } else {
+          this.snackbar = true;
+          this.message = "Debe llenar todos los campos requeridos";
+          setTimeout(() => {
+            this.snackbar = false;
+          }, 1000);
         }
-      },
+      }
     },
+    initialize() {
+      this.option = this.$route.params.option;
+      if (this.option === 3 || this.option === 2) {
+        this.promotionsData = this.$route.params.promotionsData;
+      }
+    }
   }
+};
 </script>
 
 <style>

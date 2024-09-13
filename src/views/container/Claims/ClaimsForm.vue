@@ -1,9 +1,5 @@
 <template>
-  <v-container
-    id="claims-profile"
-    fluid
-    tag="section"
-  >
+  <v-container id="claims-profile" fluid tag="section">
     <v-row justify="center">
       <base-material-card icon="mdi-account-outline">
         <template v-slot:heading>
@@ -37,19 +33,11 @@
             </v-btn>
           </v-fab-transition>
         </v-card-text>
-        <v-tabs-items
-          v-model="tabs"
-          class="transparent"
-        >
+        <v-tabs-items v-model="tabs" class="transparent">
           <v-tab-item :kei="0">
-            <v-form
-              ref="form"
-
-              lazy-validation
-            >
+            <v-form ref="form" lazy-validation>
               <v-container class="py-0">
                 <v-row>
-                  
                   <v-col cols="7">
                     <v-text-field
                       v-model="claimsData.title"
@@ -83,10 +71,7 @@
                       :readonly="option === 2 ? true : false"
                     />
                   </v-col>
-                  <v-col
-                    cols="12"
-                    class="text-right"
-                  >
+                  <v-col cols="12" class="text-right">
                     <v-btn
                       v-if="option !== 2"
                       color="success"
@@ -128,128 +113,125 @@
 </template>
 
 <script>
-  import i18n from '@/i18n'
-  export default {
-
-    data: () => ({
-      tabs: 0,
-      option: 0,
-      title: '',
-      snackbar: '',
-      message: '',
-      claimsData: {
-        id: '',
-        title: '',
-        fecha: '',
-        description: '',
-        status:''
-      },
-    }),
-    computed: {
-      getTitle () {
-        if (this.option === 1) return i18n.t('claims.create')
-        else if (this.option === 2) return i18n.t('claims.show')
-        else if (this.option === 3) return i18n.t('claims.edit')
-        else return i18n.t('claims.head')
-      },
-      getTitleButton () {
-        if (this.option === 1) return i18n.t('crud.create')
-        else if (this.option === 2) return i18n.t('crud.show')
-        else if (this.option === 3) return i18n.t('crud.edit')
-        else return i18n.t('claims.head')
-      },
+import i18n from "@/i18n";
+export default {
+  data: () => ({
+    tabs: 0,
+    option: 0,
+    title: "",
+    snackbar: "",
+    message: "",
+    claimsData: {
+      id: "",
+      title: "",
+      fecha: "",
+      description: "",
+      status: ""
+    }
+  }),
+  computed: {
+    getTitle() {
+      if (this.option === 1) return i18n.t("claims.create");
+      else if (this.option === 2) return i18n.t("claims.show");
+      else if (this.option === 3) return i18n.t("claims.edit");
+      else return i18n.t("claims.head");
     },
-    mounted () {
-      this.initialize()
-    },
-    methods: {
-     
-      initialize () {
-        this.option = this.$route.params.option
-        if (this.option === 3 || this.option === 2) {
-          this.claimsData = this.$route.params.claimsData
-        }
-      },
+    getTitleButton() {
+      if (this.option === 1) return i18n.t("crud.create");
+      else if (this.option === 2) return i18n.t("crud.show");
+      else if (this.option === 3) return i18n.t("crud.edit");
+      else return i18n.t("claims.head");
+    }
+  },
+  mounted() {
+    this.initialize();
+  },
+  methods: {
+    initialize() {
+      this.option = this.$route.params.option;
+      if (this.option === 3 || this.option === 2) {
+        this.claimsData = this.$route.params.claimsData;
+      }
+    }
 
-      // async submit () {
-      //   if (this.option === 1) {
-      //     if (this.$refs.form.validate()) {
+    // async submit () {
+    //   if (this.option === 1) {
+    //     if (this.$refs.form.validate()) {
 
-      //       let typeService = {
-      //         name: this.typeData.name,
-      //         warrantyDays: this.typeData.warrantyDays,
-      //         status: "Activo"
+    //       let typeService = {
+    //         name: this.typeData.name,
+    //         warrantyDays: this.typeData.warrantyDays,
+    //         status: "Activo"
 
-      //       }
-      //       console.log("🚀 ~ submit ~ typeService:", typeService)
+    //       }
+    //       console.log("🚀 ~ submit ~ typeService:", typeService)
 
-      //       typeService = await createTypeServicio(typeService)
+    //       typeService = await createTypeServicio(typeService)
 
-      //       if (typeService.status == 201) {
-      //         this.snackbar = true
-      //         this.message = 'Registro exitoso'
-      //         setTimeout(() => {
-      //           this.$router.push({ name: 'TypeServices' })
-      //         }, 2000)
-      //       } else {
-      //         this.snackbar = true
-      //         this.message = 'Hubo un error durante el registro'
-      //         setTimeout(() => {
-      //           this.snackbar = false
-      //         }, 1000)
-      //       }
+    //       if (typeService.status == 201) {
+    //         this.snackbar = true
+    //         this.message = 'Registro exitoso'
+    //         setTimeout(() => {
+    //           this.$router.push({ name: 'TypeServices' })
+    //         }, 2000)
+    //       } else {
+    //         this.snackbar = true
+    //         this.message = 'Hubo un error durante el registro'
+    //         setTimeout(() => {
+    //           this.snackbar = false
+    //         }, 1000)
+    //       }
 
-      //     } else {
-      //       this.snackbar = true
-      //       this.message = 'Debe llenar todos los campos requeridos'
-      //       setTimeout(() => {
-      //         this.snackbar = false
-      //       }, 1000)
-      //     }
-      //   }  
-      //   if (this.option === 3) {
-      //     if (this.$refs.form.validate()) {
+    //     } else {
+    //       this.snackbar = true
+    //       this.message = 'Debe llenar todos los campos requeridos'
+    //       setTimeout(() => {
+    //         this.snackbar = false
+    //       }, 1000)
+    //     }
+    //   }
+    //   if (this.option === 3) {
+    //     if (this.$refs.form.validate()) {
 
-      //       let id = this.typeData.id
-      //       console.log("🚀 ~ submit ~ id:", id)
-           
-      //       let typeService = {
-      //         name: this.typeData.name,
-      //         warrantyDays :this.typeData,
-      //         status:this.typeData.status,
-      //       }
+    //       let id = this.typeData.id
+    //       console.log("🚀 ~ submit ~ id:", id)
 
-      //       typeService = await updateTypeService(typeService, id)
-      //       console.log('que trae ', typeService)
-            
-      //       if (typeService.status == 200) {
-      //         this.snackbar = true
-      //         this.message = 'Actualizacion exitosa'
-      //         setTimeout(() => {
-      //           this.$router.push({ name: 'TypeServices' })
-      //         }, 2000)
-      //       } else {
-      //         this.snackbar = true
-      //         this.message = 'Hubo un error durante la actualizacion'
-      //         setTimeout(() => {
-      //           this.snackbar = false
-      //         }, 1000)
-      //       }
-      //     } else {
-      //       this.snackbar = true
-      //       this.message = 'Debe llenar todos los campos requeridos'
-      //       setTimeout(() => {
-      //         this.snackbar = false
-      //       }, 1000)
-      //     }
-      //   }
-      // },
-    },
+    //       let typeService = {
+    //         name: this.typeData.name,
+    //         warrantyDays :this.typeData,
+    //         status:this.typeData.status,
+    //       }
+
+    //       typeService = await updateTypeService(typeService, id)
+    //       console.log('que trae ', typeService)
+
+    //       if (typeService.status == 200) {
+    //         this.snackbar = true
+    //         this.message = 'Actualizacion exitosa'
+    //         setTimeout(() => {
+    //           this.$router.push({ name: 'TypeServices' })
+    //         }, 2000)
+    //       } else {
+    //         this.snackbar = true
+    //         this.message = 'Hubo un error durante la actualizacion'
+    //         setTimeout(() => {
+    //           this.snackbar = false
+    //         }, 1000)
+    //       }
+    //     } else {
+    //       this.snackbar = true
+    //       this.message = 'Debe llenar todos los campos requeridos'
+    //       setTimeout(() => {
+    //         this.snackbar = false
+    //       }, 1000)
+    //     }
+    //   }
+    // },
   }
- 
+};
 </script>
 
- <style>
+<style>
 .lbl {
   padding: 0.5em;
   margin: auto;

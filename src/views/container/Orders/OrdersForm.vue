@@ -1,3 +1,4 @@
+  /* eslint-disable */
 <template>
   <v-container id="Servicios-profile" fluid tag="section">
     <v-row justify="center">
@@ -41,8 +42,7 @@
           <v-card-title>
             <v-row>
               <v-col cols="12" md="3"
-                ><strong>Nro del Pedido:</strong>
-                {{ ordersData.codigo }}</v-col
+                ><strong>Nro del Pedido:</strong> {{ ordersData.codigo }}</v-col
               >
               <v-col cols="12" md="4"
                 ><strong>Fecha:</strong>
@@ -66,7 +66,7 @@
                 {{ this.clientLogued.codven }}
               </v-col> -->
               <v-col cols="12" md="4" v-if="roleUser === `tecnico`">
-              <strong>Código Vendedor:</strong>
+                <strong>Código Vendedor:</strong>
                 {{ ordersData.codven }}
               </v-col>
               <v-col cols="12" md="4"
@@ -147,6 +147,7 @@
           :search.sync="search"
           :sort-by="['id', 'titulo']"
           :sort-desc="[false, true]"
+          :items-per-page="5"
           multi-sort
           class="elevation-1"
         >
@@ -250,7 +251,7 @@ export default {
         value: "codigo"
       },
       {
-        text: "Nombre del",
+        text: "Nombre del Producto",
         value: "name"
       },
       {
@@ -262,13 +263,13 @@ export default {
         value: "cant"
       },
       {
-        text: "Precio al Detal",
+        text: "Precio",
         value: "priceD"
       },
-      {
-        text: "Precio al Mayor",
-        value: "priceM"
-      },
+      // {
+      //   text: "Precio al Mayor",
+      //   value: "priceM"
+      // },
       {
         sortable: false,
         text: "Acciones",
@@ -294,7 +295,7 @@ export default {
     clientID: localStorage.getItem("id") || "",
     clientName: localStorage.getItem("name") || "",
     roleUser: localStorage.getItem("rol") || "",
-    clientLogued: null, 
+    clientLogued: null
   }),
   computed: {
     getTitle() {
@@ -314,12 +315,10 @@ export default {
         (sum, item) => sum + item.priceD * item.quantity,
         0
       );
-    },
+    }
   },
   mounted() {
-    this.initialize(), 
-    this.data(),
-    this.getListClient()
+    this.initialize(), this.data(), this.getListClient();
   },
   methods: {
     formatDate(dateString) {
@@ -333,28 +332,23 @@ export default {
       result = await clientGetList();
       if (result.status == 200) {
         const userEmail = localStorage.getItem("email");
-        console.log(result.data);
-        // this.itemsClient = result.data;
-        console.log("roleUser",this.roleUser)
 
-        if (this.roleUser === "tecnico"){
+        // this.itemsClient = result.data;
+
+        if (this.roleUser === "tecnico") {
           this.itemsClient = result.data.filter(client => {
             return client.codven === userEmail;
           });
-          console.log(this.itemsClient)
         }
-        
+
         if (this.roleUser === "user") {
-        console.log(result.data);
-        this.client = result.data;
-        console.log(this.client);
+          this.client = result.data;
+
           this.clientLogued = this.client.find(
             client => client.codigo === userEmail
           );
           if (this.clientLogued) {
-            console.log("Cliente logueado:", this.clientLogued);
           } else {
-            console.error("Cliente no encontrado para el email:", userEmail);
           }
         }
       } else {
@@ -364,22 +358,19 @@ export default {
     },
     filterClients(userEmail) {
       // Filtrar clientes cuyo codven coincide con el userEmail
-      this.filteredClients = this.clients.filter(client => client.vendor.email === userEmail);
+      this.filteredClients = this.clients.filter(
+        client => client.vendor.email === userEmail
+      );
     },
     updateClientData() {
       this.selectedClientData = this.itemsClient.find(
         client => client.id === this.selectedClient
       );
-      console.log("Client Data Updated:", this.selectedClientData);
     },
     storeClientData() {
       localStorage.setItem(
         "selectedClientData",
         JSON.stringify(this.selectedClientData)
-      );
-      console.log(
-        "Client Data Stored:",
-        localStorage.getItem("selectedClientData")
       );
     },
     handleClientChange() {
@@ -391,9 +382,8 @@ export default {
       this.option = this.$route.params.option;
 
       if (this.option === 3 || this.option === 2) {
-        console.log(this.option)
         this.ordersData = this.$route.params.ordersData;
-        console.log("ordersData:", this.ordersData);
+
         this.selectedItems = this.ordersData.orderProducts.map(
           orderProduct => ({
             id: orderProduct.product.id,
@@ -406,14 +396,12 @@ export default {
             quantity: orderProduct.quantity
           })
         );
-        console.log("selectedItems:", this.selectedItems);
       }
     },
     data: async function() {
       let result;
       result = await inventoryGetList();
       if (result.status == 200) {
-        console.log(result.data);
         this.items = result.data;
         this.filteredItems = result.data;
       } else {
@@ -422,7 +410,6 @@ export default {
       }
     },
     async confirmOrder() {
-      console.log("confirmOrder called");
       if (this.selectedItems.length === 0) {
         this.snackbar = true;
         this.message = "No hay productos seleccionados para el pedido";
@@ -452,7 +439,6 @@ export default {
             status: "PE",
             dtot_ped: this.totalOrderPrice.toString()
           };
-          console.log("order data client:", orderData);
         } else if (this.roleUser === "tecnico" && this.selectedClientData) {
           orderData = {
             // codigo: this.selectedClientData.rif,
@@ -472,20 +458,15 @@ export default {
             status: "PE",
             dtot_ped: this.totalOrderPrice.toString()
           };
-          console.log("order data vendor:", orderData);
         } else {
           this.snackbar = true;
           this.message = "Por favor, selecciona un cliente válido";
           return;
         }
 
-        console.log("Role:", this.roleUser);
-        console.log("Sending order data:", orderData);
-
         const response = await createorder(orderData);
-        console.log("API response:", response);
+
         if (response.status === 201) {
-          console.log("Order enviada exitosamente");
           this.snackbar = true;
           this.message = "Pedido realizado exitosamente";
 
@@ -493,13 +474,15 @@ export default {
             this.$router.push({ name: "Orders" });
           }, 2500);
         } else {
-          console.log("Error in create order");
           this.snackbar = true;
           this.message = "Hubo un error al realizar el pedido";
         }
       } catch (error) {
         console.error("Error en confirmOrder:", error);
         this.snackbar = true;
+        setTimeout(() => {
+                this.snackbar = false;
+              }, 2000);
         this.message = "Ocurrió un error al conectarse con el servidor";
       }
     },
@@ -538,7 +521,6 @@ export default {
 
   watch: {
     searchTerm(val) {
-      console.log("Search Term:", val);
       if (val === undefined) {
         this.filteredItems = this.items;
       } else if (val.trim() === "") {
@@ -550,7 +532,6 @@ export default {
             item.codigo.toLowerCase().includes(val.toLowerCase())
         );
       }
-      console.log("Filtered Items:", this.filteredItems);
     }
   }
 };

@@ -19,21 +19,21 @@ async function usersGetList() {
 async function createUser(userToCreate) {
     const result = await apiHttp('post', '/api/v1/users', userToCreate);
 
-    console.log('Usuario creado: ', result)
+    // console.log('Usuario creado: ', result)
     return result
 }
 
 async function deleteUser(id) {
     let result
     result = await apiHttp('delete', '/api/v1/users/' + id)
-    console.log('Usuario Eliminado: ', result)
+    // console.log('Usuario Eliminado: ', result)
     return result
 }
 
 
 async function updateUser(id, userToUpdate) {
     const result = await apiHttp('patch', '/api/v1/users/updateProfile/' + id, userToUpdate)
-    console.log('Usuario Actualizado: ', result)
+    // console.log('Usuario Actualizado: ', result)
     return result
 }
 

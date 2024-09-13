@@ -9,7 +9,7 @@
     >
       <v-col cols="auto">
         <h1 class="title font-weight-black">
-          404
+          Acceso Denegado
         </h1>
         <img
           src=""
@@ -17,12 +17,12 @@
         >
 
         <div class="display-3 mb-5 mt-10">
-          No se encontro la página :(
+          No tienes permiso para ingresar a esta ruta :(
         </div>
 
         <v-btn
           depressed
-          to="/"
+          @click="$router.go(-1)"
         >
           Salir de aquí!
         </v-btn>
@@ -40,5 +40,5 @@
 <style lang="sass">
 .error-page
   h1
-    font-size: 12rem
+    font-size: 1rem
 </style>

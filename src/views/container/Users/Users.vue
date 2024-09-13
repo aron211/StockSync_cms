@@ -1,8 +1,5 @@
 <template>
-  <v-container
-    id="data-tables"
-    tag="section"
-  >
+  <v-container id="data-tables" tag="section">
     <base-material-card
       icon="mdi-account-group"
       color="greenligth"
@@ -56,10 +53,7 @@
             x-small
             @click="show(item)"
           >
-            <v-icon
-              small
-              v-text="'mdi-eye'"
-            />
+            <v-icon small v-text="'mdi-eye'" />
           </v-btn>
           <!-- <v-btn
             :key="2"
@@ -82,59 +76,33 @@
             x-small
             @click="deleteuser(item)"
           >
-            <v-icon
-              small
-              v-text="'mdi-delete'"
-            />
+            <v-icon small v-text="'mdi-delete'" />
           </v-btn>
         </template>
       </v-data-table>
 
       <div class="text-center">
-        <v-snackbar
-          v-model="snackbar"
-          :timeout="timeout"
-          color="#75B768"
-        >
+        <v-snackbar v-model="snackbar" :timeout="timeout" color="#75B768">
           {{ message }}
 
           <template v-slot:action="{ attrs }">
-            <v-btn
-              color="white"
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-            >
+            <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
               Close
             </v-btn>
           </template>
         </v-snackbar>
       </div>
-      <v-dialog
-        v-model="dialogDelete"
-        persistent
-        max-width="500px"
-      >
+      <v-dialog v-model="dialogDelete" persistent max-width="500px">
         <v-card>
-          <v-card-title
-            class="text-h5"
-          >
+          <v-card-title class="text-h5">
             Estas seguro que deseas eliminar este Usuario?
           </v-card-title>
           <v-card-actions>
             <v-spacer />
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="closeDelete"
-            >
+            <v-btn color="blue darken-1" text @click="closeDelete">
               Cancelar
             </v-btn>
-            <v-btn
-              color="blue darken-1"
-              text
-              @click="deleteItemConfirm"
-            >
+            <v-btn color="blue darken-1" text @click="deleteItemConfirm">
               OK
             </v-btn>
             <v-spacer />
@@ -162,142 +130,135 @@
   </v-container>
 </template>
 
-  <script>
-  import i18n from '@/i18n'
-  import { usersGetList ,deleteUser} from '../../../api/modules/user'
-  export default {
-    name: 'DashboardDataTables',
-    data: () => ({
-      dialogDelete: false,
-      timeout:0,
-      snackbar: false,
-      message: '',
-      hidden: false,
-      id: null,
-      headers: [
-       
-        {
-          text: i18n.t('users.Name'),
-          value: 'name',
-        },
-        {
-          text: "Email",
-          value: 'reference',
-        },
-        // {
-        //   text: "Rif o cedula",
-        //   value: 'ci',
-        // },
-        {
-          text: "Codigo/Nombre usuario",
-          value: 'email',
-        },
-        {
-          text: "Tipo de usuario",
-          value: 'role',
-        },
-        // {
-        //   text: i18n.t('users.rol'),
-        //   value: 'role',
-        // },       
-        {
-          sortable: false,
-          text: 'Acciones',
-          value: 'actions',
-        },
-      ],
-      items: [ ],
-      search: undefined,
+<script>
+import i18n from "@/i18n";
+import { usersGetList, deleteUser } from "../../../api/modules/user";
+export default {
+  name: "DashboardDataTables",
+  data: () => ({
+    dialogDelete: false,
+    timeout: 0,
+    snackbar: false,
+    message: "",
+    hidden: false,
+    id: null,
+    headers: [
+      {
+        text: i18n.t("users.Name"),
+        value: "name"
+      },
+      {
+        text: "Email",
+        value: "reference"
+      },
+      // {
+      //   text: "Rif o cedula",
+      //   value: 'ci',
+      // },
+      {
+        text: "Codigo/Nombre usuario",
+        value: "email"
+      },
+      {
+        text: "Tipo de usuario",
+        value: "role"
+      },
+      // {
+      //   text: i18n.t('users.rol'),
+      //   value: 'role',
+      // },
+      {
+        sortable: false,
+        text: "Acciones",
+        value: "actions"
+      }
+    ],
+    items: [],
+    search: undefined
+  }),
 
-    }),
-
-    computed: {
+  computed: {
     filteredItems() {
-      const loggedUserId = localStorage.getItem('id');
-      console.log("idUserLogged: ",loggedUserId)
+      const loggedUserId = localStorage.getItem("id");
+      // console.log("idUserLogged: ",loggedUserId)
       return this.items.filter(item => item.id !== loggedUserId);
     }
-    },
+  },
 
-    mounted () {
-      this.data()
-    },
+  mounted() {
+    this.data();
+  },
 
-    methods: {
-      getRoleLabel(role) {
-        return role === 'user' ? 'Cliente' : (role === 'tecnico' ? 'Vendedor' : 'Desconocido');
-      },
-      data: async function () {
-        let result
-        result = await usersGetList()
-        if (result.status==200) {
-         
-          this.items = result.data
-        } else {
-        
-         this.dialog = true;
-         this.message = result.message.text;
+  methods: {
+    getRoleLabel(role) {
+      return role === "user"
+        ? "Cliente"
+        : role === "tecnico"
+        ? "Vendedor"
+        : "Desconocido";
+    },
+    data: async function() {
+      let result;
+      result = await usersGetList();
+      if (result.status == 200) {
+        this.items = result.data;
+      } else {
+        this.dialog = true;
+        this.message = result.message.text;
+      }
+    },
+    create() {
+      this.$router.push({
+        name: "UsersFrom",
+        params: {
+          option: 1 // option 1 to create
         }
-
-      },
-      create () {
-        this.$router.push({
-          name: 'UsersFrom',
-          params: {
-            option: 1, // option 1 to create
-          },
-        })
-      },
-      show (item) {
-        console.log(item)
-        this.$router.push({
-          name: 'UsersFrom',
-          params: {
-            option: 2, // option 2 to show
-            usersData: item,
-          },
-        })
-      },
-      deleteuser (item) {
-        this.iduser = item.id
-        this.dialogDelete = true
-      },
-      closeDelete () {
-        this.dialogDelete = false
-      },
-
-    
-        async deleteItemConfirm () {
-          let result
-          result = await deleteUser(this.iduser)
-          
-          if (result.status === 200) {
-         
-            this.dialogDelete = false
-            this.snackbar = true
-            this.message = 'Eliminación exitosa'
-           
-            setTimeout(() => {
-             
-              this.snackbar = false
-            }, 1000)
-            this.data()
-          } else {
-            console.log("ocurrio un error")
-            this.snackbar = true
-            this.data();
-            this.dialogDelete = false
-            this.message = 'ocurrio un error al eliminar al usuario'
-            setTimeout(() => {
-              this.snackbar = false
-            }, 1000)
-          }
-        },
+      });
+    },
+    show(item) {
+      // console.log(item)
+      this.$router.push({
+        name: "UsersFrom",
+        params: {
+          option: 2, // option 2 to show
+          usersData: item
+        }
+      });
+    },
+    deleteuser(item) {
+      this.iduser = item.id;
+      this.dialogDelete = true;
+    },
+    closeDelete() {
+      this.dialogDelete = false;
     },
 
+    async deleteItemConfirm() {
+      let result;
+      result = await deleteUser(this.iduser);
+
+      if (result.status === 200) {
+        this.dialogDelete = false;
+        this.snackbar = true;
+        this.message = "Eliminación exitosa";
+
+        setTimeout(() => {
+          this.snackbar = false;
+        }, 1000);
+        this.data();
+      } else {
+        // console.log("ocurrio un error")
+        this.snackbar = true;
+        this.data();
+        this.dialogDelete = false;
+        this.message = "ocurrio un error al eliminar al usuario";
+        setTimeout(() => {
+          this.snackbar = false;
+        }, 1000);
+      }
+    }
   }
-  </script>
+};
+</script>
 
-  <style>
-
-  </style>
+<style></style>

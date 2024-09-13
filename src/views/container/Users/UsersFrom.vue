@@ -36,7 +36,13 @@
         <v-tabs-items v-model="tabs" class="transparent">
           <v-tab-item :key="0">
             <v-form ref="form" lazy-validation>
-              <v-col cols="12" md="6" :hidden="option == 2 || option === 3">
+              <v-col cols="12" md="12">
+                    <h3 :hidden="option == 2 || option === 3">
+                      Seleccione el tipo de usuario a registrar
+                    </h3>
+                    <br />
+                  </v-col>
+              <v-col cols="12" md="6" v-if="option === 1">
                 <v-select
                   v-model="selectedUserType"
                   :items="userTypes"
@@ -162,13 +168,18 @@
                 </v-row>
                 <v-row>
                   <v-col cols="12" md="12">
-                    <h1 :hidden="option == 2 || option === 3">
-                      Ingrese nombre de usuario y contraseña con el que el cliente
-                      ingresara al sistema
-                    </h1>
-                    <br>
+                    <h3 :hidden="option == 2 || option === 3">
+                      Ingrese contraseña con el que el
+                      usuario ingresara al sistema
+                    </h3>
+                    <br />
                   </v-col>
-                  <v-col v-if="selectedUserType === 'Vendedor'" :hidden="option == 3" cols="12" md="6">
+                  <v-col
+                    v-if="selectedUserType === 'Vendedor'"
+                    :hidden="option == 3"
+                    cols="12"
+                    md="6"
+                  >
                     <v-text-field
                       v-model="user.rif"
                       label="Nombre de usuario"
@@ -177,7 +188,12 @@
                       :rules="[rules.required]"
                     />
                   </v-col>
-                  <v-col v-if="selectedUserType === 'Cliente'" :hidden="option == 3" cols="12" md="6">
+                  <v-col
+                    v-if="selectedUserType === 'Cliente'"
+                    :hidden="option == 3"
+                    cols="12"
+                    md="6"
+                  >
                     <v-text-field
                       v-model="user.codigo"
                       label="Nombre de usuario"
@@ -186,8 +202,9 @@
                       :rules="[rules.required]"
                     />
                   </v-col>
-                  <v-col :hidden="option == 3 || option == 2" cols="12" md="6">
+                  <v-col :hidden="option === 2" cols="12" md="6">
                     <v-text-field
+                    v-if="option !==2"
                       v-model="user.password"
                       :type="show1 ? 'text' : 'password'"
                       :append-icon="show1 ? 'mdi-eye' : ' mdi-eye-off'"
@@ -292,7 +309,7 @@ export default {
       email: "",
       phone: ""
     },
-    userTypes: [ "Cliente","Vendedor"],
+    userTypes: ["Cliente", "Vendedor"],
     selectedUserType: null,
     selectedClient: null,
     selectedVendor: null,
@@ -345,6 +362,7 @@ export default {
       if (this.option === 3 || this.option === 2) {
         this.user = this.$route.params.usersData;
       }
+      // console.log('User data initialized:', this.user);
       if (this.userType === "Cliente") {
         this.user.role = "user";
       } else if (this.userType === "Vendedor") {
@@ -355,7 +373,6 @@ export default {
       let result;
       result = await clientGetList();
       if (result.status == 200) {
-        console.log(result.data);
         this.itemsClient = result.data;
       } else {
         this.dialog = true;
@@ -366,7 +383,6 @@ export default {
       let result;
       result = await vendorGetList();
       if (result.status == 200) {
-        console.log(result.data);
         this.itemsVendor = result.data;
       } else {
         this.dialog = true;
@@ -386,7 +402,6 @@ export default {
         this.user.rif = client.rif || "";
         this.user.codigo = client.codigo || "";
       }
-      console.log("client updateClientData", client);
     },
     updateVendorData() {
       const vendor = this.itemsVendor.find(
@@ -401,13 +416,12 @@ export default {
         this.user.address = "default";
         this.user.codigo = "001";
       }
-      console.log("vendor updateVendorData", vendor);
     },
     async submit() {
       if (this.option === 1) {
         if (this.$refs.form.validate()) {
-          let user = {}
-          if(this.selectedUserType === "Vendedor"){
+          let user = {};
+          if (this.selectedUserType === "Vendedor") {
             user = {
               role: this.user.role,
               name: this.user.name,
@@ -420,9 +434,7 @@ export default {
               rif: this.user.rif || "1",
               codigo: this.user.codigo || "1"
             };
-            console.log("Datos enviados:", user);
-          }
-          else if(this.selectedUserType === "Cliente") {
+          } else if (this.selectedUserType === "Cliente") {
             user = {
               role: this.user.role,
               name: this.user.name,
@@ -435,12 +447,10 @@ export default {
               rif: this.user.rif || "1",
               codigo: this.user.codigo || "1"
             };
-            console.log("Datos enviados:", user);
           }
 
           try {
             const result = await apiHttp("post", "/api/v1/auth/register", user);
-            console.log("Resultado de la solicitud:", result);
 
             if (result.status == 201) {
               this.snackbar = true;

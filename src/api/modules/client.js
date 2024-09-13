@@ -19,14 +19,14 @@ async function clientGetList() {
 async function createClient(clientToCreate) {
     const result = await apiHttp('post', '/api/v1/client', clientToCreate);
 
-    console.log('Cliente creado: ', result)
+    // console.log('Cliente creado: ', result)
     return result
 }
 
 async function deleteClient(id) {
     let result
     result = await apiHttp('delete', '/api/v1/client/' + id)
-    console.log('Cliente Eliminado: ', result)
+    // console.log('Cliente Eliminado: ', result)
     return result
 }
 

@@ -5,7 +5,6 @@
     :dark="barColor !== 'rgba(117, 183, 104, 1), rgba(20, 126, 72, 0.7)'"
     :expand-on-hover="expandOnHover"
     :right="$vuetify.rtl"
-    :src="barImage"
     mobile-break-point="960"
     app
     width="260"

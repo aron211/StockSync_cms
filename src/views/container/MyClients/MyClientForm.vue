@@ -57,7 +57,6 @@
         <!-- search client register -->
         <v-divider class="mt-5" />
         <v-autocomplete
-          
           v-model="selectedClient"
           :items="itemsClient"
           label="Seleciona el cliente a agregar"
@@ -263,7 +262,6 @@ export default {
       let result;
       result = await clientGetList();
       if (result.status == 200) {
-        console.log(result.data);
         this.itemsClient = result.data;
       } else {
         this.dialog = true;
@@ -282,13 +280,11 @@ export default {
         this.user.rif = client.rif || "";
         this.user.codigo = client.codigo || "";
       }
-      console.log("client updateClientData", client);
     },
     initialize() {
       this.option = this.$route.params.option;
       if (this.option === 3 || this.option === 2) {
         this.ordersData = this.$route.params.ordersData;
-        console.log("ordersData:", this.ordersData);
         this.selectedItems = this.ordersData.orderProducts.map(
           orderProduct => ({
             id: orderProduct.product.id,
@@ -301,14 +297,12 @@ export default {
             quantity: orderProduct.quantity
           })
         );
-        console.log("selectedItems:", this.selectedItems);
       }
     },
     data: async function() {
       let result;
       result = await inventoryGetList();
       if (result.status == 200) {
-        console.log(result.data);
         this.items = result.data;
         this.filteredItems = result.data;
       } else {
@@ -318,34 +312,31 @@ export default {
     },
 
     async confirmOrder() {
-      console.log("confirmOrder called");
       if (this.selectedItems.length === 0) {
         this.snackbar = true;
         this.message = "No hay productos seleccionados para el pedido";
         return;
       }
       const orderData = {
-          priceTotal: this.totalOrderPrice.toString(),
-          userId: this.clientID,
-          products: this.selectedItems.map(item => ({
-            productId: item.id,
-            quantity: item.quantity
-          }))
-        };
+        priceTotal: this.totalOrderPrice.toString(),
+        userId: this.clientID,
+        products: this.selectedItems.map(item => ({
+          productId: item.id,
+          quantity: item.quantity
+        }))
+      };
       try {
         if (this.roleUser === "user") {
-    orderData.codigo = this.user.codigo;
-    orderData.nameCli = this.clientName;
-  } else if (this.roleUser === "tecnico") {
-    orderData.rif = this.user.rif;
-    orderData.nameCli = this.clientName;
-  }
-        console.log("Sending order data:", orderData);
+          orderData.codigo = this.user.codigo;
+          orderData.nameCli = this.clientName;
+        } else if (this.roleUser === "tecnico") {
+          orderData.rif = this.user.rif;
+          orderData.nameCli = this.clientName;
+        }
 
         const response = await createorder(orderData);
-        console.log("API response:", response);
+
         if (response.status === 201) {
-          console.log("order enviada exitosamente");
           this.snackbar = true;
           this.message = "Pedido realizado exitosamente";
 
@@ -353,7 +344,6 @@ export default {
             this.$router.push({ name: "Orders" });
           }, 2500);
         } else {
-          console.log("Error in create order");
           this.snackbar = true;
           this.message = "Hubo un error al realizar el pedido";
         }
@@ -399,7 +389,6 @@ export default {
 
   watch: {
     searchTerm(val) {
-      console.log("Search Term:", val);
       if (val === undefined) {
         this.filteredItems = this.items;
       } else if (val.trim() === "") {

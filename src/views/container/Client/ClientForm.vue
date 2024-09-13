@@ -1,9 +1,5 @@
 <template>
-  <v-container
-    id="Servicios-profile"
-    fluid
-    tag="section"
-  >
+  <v-container id="Servicios-profile" fluid tag="section">
     <v-row justify="center">
       <base-material-card icon="mdi-account-outline">
         <template v-slot:heading>
@@ -42,7 +38,6 @@
             <v-form ref="form" lazy-validation>
               <v-container class="py-0">
                 <v-row>
-                  
                   <v-col cols="12" md="6">
                     <v-text-field
                       v-model="client.name"
@@ -79,15 +74,13 @@
                     />
                   </v-col>
                   <v-col cols="12" md="6">
-                   
-                        <v-text-field
-                          v-model="client.phone"
-                          color="secondary"
-                          label="Teléfono"
-                          :rules="[rules.required]"
-                          :readonly="option === 2"
-                        />
-                      
+                    <v-text-field
+                      v-model="client.phone"
+                      color="secondary"
+                      label="Teléfono"
+                      :rules="[rules.required]"
+                      :readonly="option === 2"
+                    />
                   </v-col>
                   <v-col cols="12" class="text-right">
                     <v-btn
@@ -131,163 +124,152 @@
   </v-container>
 </template>
 
-
 <script>
-  import i18n from '@/i18n'
-  import {createClient,updateUser} from '../../../api/modules/client'
+import i18n from "@/i18n";
+import { createClien } from "../../../api/modules/client";
 
-  export default {
+export default {
+  data: () => ({
+    tabs: 0,
+    option: 0,
+    setTimeout: 0,
+    show1: false,
+    title: "",
+    snackbar: "",
+    message: "",
 
-    data: () => ({
-      tabs: 0,
-      option: 0,
-      setTimeout:0,
-      show1: false,
-      title: '',
-      snackbar: '',
-      message: '',
-     
-      user: {
-        id: '',
-        name: '',
-        codigo: '',
-        rif: '',
-        password: '',
-        role: '',
-        urlAvatar: '',
-        reference:'',
-        address:'',
-        phone:'',
-        code:'',
-        createdAt:'', 
-        updatedAt:''
-      },
-      client: {
-        id: "",
-        codigo: "",
-        name: "",
-        rif: "",
-        address: "",
-        phone: "",
-        createdAt: "",
-        updatedAt: ""
-      },
-      rules: {
-        required: value => !!value || 'este dato es obligatorio.',
-        min: v => v.length >= 6 || 'Mínimo 6 caracteres',
+    user: {
+      id: "",
+      name: "",
+      codigo: "",
+      rif: "",
+      password: "",
+      role: "",
+      urlAvatar: "",
+      reference: "",
+      address: "",
+      phone: "",
+      code: "",
+      createdAt: "",
+      updatedAt: ""
+    },
+    client: {
+      id: "",
+      codigo: "",
+      name: "",
+      rif: "",
+      address: "",
+      phone: "",
+      createdAt: "",
+      updatedAt: ""
+    },
+    rules: {
+      required: value => !!value || "este dato es obligatorio.",
+      min: v => v.length >= 6 || "Mínimo 6 caracteres"
       //   emailRules: v => /.+@.+\..+/.test(v) || 'el correo deber ser valido. Ejemplo@email.com',
-        // passwordMatch: v => v === this.user.password || 'Las contraseñas deben coincidir'
-      
-        // emailMatch: () => "El correo y la contraseña no coinciden"
-      },
-      
+      // passwordMatch: v => v === this.user.password || 'Las contraseñas deben coincidir'
 
-    }),
-    computed: {
-      getTitle () {
-        if (this.option === 1) return i18n.t('users.create')
-        else if (this.option === 2) return i18n.t('users.show')
-        else if (this.option === 3) return i18n.t('users.edit')
-        else return i18n.t('users.head')
-      },
-      getTitleButton () {
-        if (this.option === 1) return i18n.t('crud.create')
-        else if (this.option === 2) return i18n.t('crud.show')
-        else if (this.option === 3) return i18n.t('crud.edit')
-        else return i18n.t('users.head')
-      },
+      // emailMatch: () => "El correo y la contraseña no coinciden"
+    }
+  }),
+  computed: {
+    getTitle() {
+      if (this.option === 1) return i18n.t("users.create");
+      else if (this.option === 2) return i18n.t("users.show");
+      else if (this.option === 3) return i18n.t("users.edit");
+      else return i18n.t("users.head");
     },
-    mounted () {
-      this.initialize()
+    getTitleButton() {
+      if (this.option === 1) return i18n.t("crud.create");
+      else if (this.option === 2) return i18n.t("crud.show");
+      else if (this.option === 3) return i18n.t("crud.edit");
+      else return i18n.t("users.head");
+    }
+  },
+  mounted() {
+    this.initialize();
+  },
+
+  methods: {
+    initialize() {
+      this.option = this.$route.params.option;
+      if (this.option === 3 || this.option === 2) {
+        this.client = this.$route.params.clientData;
+      }
     },
 
-    methods: {
-      initialize () {
-        this.option = this.$route.params.option
-        if (this.option === 3 || this.option === 2) {
-          this.client = this.$route.params.clientData;
-        }
-       
-         
-      },
+    async submit() {
+      if (this.option === 1) {
+        if (this.$refs.form.validate()) {
+          let client = {
+            codigo: "4",
+            name: this.client.name,
+            rif: this.client.rif,
+            address: this.client.address,
+            phone: this.client.phone
+          };
 
-     async  submit () {
-        if (this.option === 1) {
-          if (this.$refs.form.validate()) {
+          const result = await createClient(client);
 
-            let client = {
-              codigo: "4",
-              name: this.client.name,
-              rif: this.client.rif,
-              address: this.client.address,
-              phone:this.client.phone,
-            }
-          
-            const result = await createClient(client)
-           
-            
-            if (result.status==201) {
-            
-              this.snackbar = true
-              this.message = 'Registro exitoso'
-              
-              setTimeout(() => {
-                this.$router.push({ name: 'Client' })
-              }, 2000)
-            } else {
+          if (result.status == 201) {
+            this.snackbar = true;
+            this.message = "Registro exitoso";
 
-              this.snackbar = true
-              this.message = 'Hubo un error durante el registro'
-              setTimeout(() => {
-                this.snackbar = false
-              }, 1000)
-            }
-
-          } else {
-            this.snackbar = true
-            this.message = 'Debe llenar todos los campos requeridos'
             setTimeout(() => {
-              this.snackbar = false
-            }, 1000)
-          }
-        }  
-        if (this.option === 3) {
-          if (this.$refs.form.validate()) {
-
-            let id = this.client.id
-
-            let client = {
-          name: this.client.name,
-          codigo: "",
-          address: this.client.address,
-          phone: this.client.phone,
-        }
-           
-            user = await updateUser(id,client)
-            if (user.status == 200) {
-              this.snackbar = true
-              this.message = 'Actualizacion exitosa'
-              setTimeout(() => {
-                this.$router.push({ name: 'Client' })
-              }, 2000)
-            } else {
-              this.snackbar = true
-              this.message = 'Hubo un error durante la actualizacion'
-              setTimeout(() => {
-                this.snackbar = false
-              }, 1000)
-            }
+              this.$router.push({ name: "Client" });
+            }, 2000);
           } else {
-            this.snackbar = true
-            this.message = 'Debe llenar todos los campos requeridos'
+            this.snackbar = true;
+            this.message = "Hubo un error durante el registro";
             setTimeout(() => {
-              this.snackbar = false
-            }, 1000)
+              this.snackbar = false;
+            }, 1000);
           }
+        } else {
+          this.snackbar = true;
+          this.message = "Debe llenar todos los campos requeridos";
+          setTimeout(() => {
+            this.snackbar = false;
+          }, 1000);
         }
-      },
-    },
+      }
+      // if (this.option === 3) {
+      //   if (this.$refs.form.validate()) {
+
+      //     let id = this.client.id
+
+      //     let client = {
+      //   name: this.client.name,
+      //   codigo: "",
+      //   address: this.client.address,
+      //   phone: this.client.phone,
+      // }
+
+      //     user = await updateUser(id,client)
+      //     if (user.status == 200) {
+      //       this.snackbar = true
+      //       this.message = 'Actualizacion exitosa'
+      //       setTimeout(() => {
+      //         this.$router.push({ name: 'Client' })
+      //       }, 2000)
+      //     } else {
+      //       this.snackbar = true
+      //       this.message = 'Hubo un error durante la actualizacion'
+      //       setTimeout(() => {
+      //         this.snackbar = false
+      //       }, 1000)
+      //     }
+      //   } else {
+      //     this.snackbar = true
+      //     this.message = 'Debe llenar todos los campos requeridos'
+      //     setTimeout(() => {
+      //       this.snackbar = false
+      //     }, 1000)
+      //   }
+      // }
+    }
   }
+};
 </script>
 
 <style>

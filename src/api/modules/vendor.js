@@ -1,9 +1,9 @@
-import axios from 'axios'
-import { apiHttp } from '../axiosApi'
+import axios from "axios";
+import { apiHttp } from "../axiosApi";
 
 async function vendorGetList() {
-    const result = await apiHttp('get', '/api/v1/vendors');
-    return result
+  const result = await apiHttp("get", "/api/v1/vendors");
+  return result;
 }
 // async function getClientesByVendor(vendorId) {
 //     console.log("call metodo getClientesByVendedir")
@@ -18,17 +18,13 @@ async function vendorGetList() {
 //     }
 //   }
 async function getClientesByVendor(ci) {
-    console.log("call metodo getClientesByVendedir")
-    try {
-      const result = await apiHttp('get', `/api/v1/vendors/clientes/${ci}`);
-      console.log("API response for getClientesByVendor:", result);
-      console.log("Result.data:", result.data); // Si la respuesta está en result.data
-      console.log("Client data:", result.data ? result.data.clients : 'No clients found');
-      return result;
-    } catch (error) {
-      console.error('Error in getClientesByVendor:', error);
-    }
+  try {
+    const result = await apiHttp("get", `/api/v1/vendors/clientes/${ci}`);
+    return result;
+  } catch (error) {
+    console.error("Error in getClientesByVendor:", error);
   }
+}
 
 // async function usersGet (IdUserLanding) {
 //   let result
@@ -41,30 +37,29 @@ async function getClientesByVendor(ci) {
 // }
 
 async function createVendor(vendorToCreate) {
-    const result = await apiHttp('post', '/api/v1/vendors', vendorToCreate);
-    console.log('Vendedor creado: ', result)
-    return result
+  const result = await apiHttp("post", "/api/v1/vendors", vendorToCreate);
+  return result;
 }
 
 async function deleteVendor(id) {
-    let result
-    result = await apiHttp('delete', '/api/v1/vendors/' + id)
-    console.log('Vendedor Eliminado: ', result)
-    return result
+  let result;
+  result = await apiHttp("delete", "/api/v1/vendors/" + id);
+  return result;
 }
-
 
 async function updateVendor(id, vendorToUpdate) {
-    const result = await apiHttp('patch', '/api/v1/vendors/' + id, vendorToUpdate)
-    console.log('Vendedor Actualizado: ', result)
-    return result
+  const result = await apiHttp(
+    "patch",
+    "/api/v1/vendors/" + id,
+    vendorToUpdate
+  );
+  return result;
 }
-
 
 export {
-    vendorGetList,
-    getClientesByVendor,
-    updateVendor,
-    deleteVendor,
-    createVendor,
-}
+  vendorGetList,
+  getClientesByVendor,
+  updateVendor,
+  deleteVendor,
+  createVendor
+};

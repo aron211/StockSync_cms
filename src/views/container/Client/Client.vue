@@ -139,7 +139,7 @@
         </v-card>
       </v-dialog>
 
-      <v-card-text style="height: 100px; position: relative">
+      <!-- <v-card-text style="height: 100px; position: relative">
         <v-fab-transition>
           <v-btn
             fab
@@ -154,7 +154,7 @@
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </v-fab-transition>
-      </v-card-text>
+      </v-card-text> -->
     </base-material-card>
   </v-container>
 </template>
@@ -216,7 +216,6 @@
         let result
         result = await clientGetList()
         if (result.status==200) {
-         console.log(result.data)
          this.items = result.data
         } else {
         
@@ -234,7 +233,6 @@
         })
       },
       show (item) {
-        console.log(item)
         this.$router.push({
           name: 'ClientsForm',
           params: {
@@ -244,7 +242,6 @@
         })
       },
       edit (item) {
-        console.log(item)
         this.$router.push({
           name: 'ClientsForm',
           params: {
@@ -278,7 +275,6 @@
             }, 1000)
             this.data()
           } else {
-            console.log("ocurrio un error")
             this.snackbar = true
             this.data();
             this.dialogDelete = false

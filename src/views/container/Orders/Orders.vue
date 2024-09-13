@@ -1,3 +1,4 @@
+  /* eslint-disable */
 <template>
   <v-container id="data-tables" tag="section">
     <base-material-card
@@ -29,8 +30,9 @@
         :headers="headers"
         :items="filteredItems"
         :search="search"
-        :sort-by="['codigo', 'createdAt', 'priceTotal', 'status' ]"
-        :sort-desc="[false, true]"
+        :sort-by="['codigo', 'createdAt', 'priceTotal', 'status']"
+        :sort-desc="[false]"
+        :items-per-page="5"
         multi-sort
         class="elevation-1"
       >
@@ -46,7 +48,7 @@
             text-color="black"
             dark
           >
-            {{ item.status === 'PE' ? 'Pendiente' : 'Recibido' }}
+            {{ item.status === "PE" ? "Pendiente" : "Recibido" }}
           </v-chip>
         </template>
         <template v-slot:[`item.actions`]="{ item }">
@@ -85,6 +87,7 @@
           </v-btn>-->
         </template>
       </v-data-table>
+
       <v-card-text style="height: 100px; position: relative">
         <v-fab-transition>
           <v-btn
@@ -92,17 +95,14 @@
             dark
             large
             color="grenndark"
-            fixed
-            right
-            
-            v-if="this.roleUser!==`admin`"
+            style="position: absolute; bottom: 16px; right: 16px;"
+            v-if="this.roleUser !== `admin`"
             @click="create"
           >
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </v-fab-transition>
       </v-card-text>
-
       <div class="text-center">
         <v-snackbar v-model="snackbar" :timeout="timeout" color="#75B768">
           {{ message }}
@@ -131,8 +131,6 @@
           </v-card-actions>
         </v-card>
       </v-dialog> -->
-
-
     </base-material-card>
   </v-container>
 </template>
@@ -158,16 +156,16 @@ export default {
       {
         text: "Nombre del cliente",
         value: "nameCli",
-        sortable: false,
+        sortable: false
       },
       {
         text: "Codigo del cliente",
         value: "cliente",
-        sortable: false,
+        sortable: false
       },
       {
         text: "Nro Pedido",
-        value: "codigo",
+        value: "codigo"
       },
       {
         text: "Monto total",
@@ -197,12 +195,9 @@ export default {
     filteredItems() {
       const logguedCodven = localStorage.getItem("email");
       const roleUser = this.roleUser;
-      console.log("logguedCodven: ", logguedCodven);
-      console.log("roleUser: ", roleUser);
-      
-      if (roleUser === 'admin') {
+
+      if (roleUser === "admin") {
         return this.items.filter(item => item.codven !== logguedCodven);
-        
       }
       return this.items.filter(item => item.codven === logguedCodven);
     }
@@ -215,7 +210,6 @@ export default {
       let result;
       result = await GetListorder();
       if (result.status == 200) {
-        console.log(result.data);
         this.items = result.data;
       } else {
         this.dialog = true;
@@ -240,7 +234,6 @@ export default {
       });
     },
     show(item) {
-      console.log(item);
       this.$router.push({
         name: "OrdersForm",
         params: {
@@ -248,7 +241,7 @@ export default {
           ordersData: item
         }
       });
-    },
+    }
     // deleteorder(item) {
     //   this.idord = item.id;
     //   this.dialogDelete = true;

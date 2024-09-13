@@ -160,7 +160,7 @@
 
   <script>
   import i18n from '@/i18n'
-  import { getlistRequest, deleterequests } from '../../../api/modules/requests'
+  import { getlistRequest } from '../../../api/modules/requests'
   export default {
     name: 'DashboardDataTables',
     data: () => ({
@@ -259,10 +259,10 @@
           },
         })
       },
-      deleterequests (item) {
-        // hay que pasar un id
-        this.dialogDelete = true
-      },
+      // deleterequests (item) {
+      //   // hay que pasar un id
+      //   this.dialogDelete = true
+      // },
       closeDelete () {
         this.dialogDelete = false
       },
@@ -272,7 +272,7 @@
       },
       async deleteRequestConfirm () {
         let result
-        result = await deleterequests(this.idord)
+        // result = await deleterequests(this.idord)
         console.log("🚀 ~ deleteRequestConfirm ~ result:", result)
         if (result === 'OK') {
           this.snackbar = true
