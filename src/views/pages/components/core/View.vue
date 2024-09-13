@@ -8,9 +8,9 @@
         'v-image--sm': this.$vuetify.breakpoint.smAndDown,
         'v-image--md': this.$vuetify.breakpoint.mdAndDown
       }"
-      :src="require(`@/assets/${src || 'loginStockSync.png'}`)"
-      gradient="to top, rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)"
-      style="object-fit: contain; min-width: 100vw; min-height: 100vh;"
+      :src="require(`@/assets/${src || 'login4.jpeg'}`)"
+      
+      style="object-fit: cover; min-width: 100vw; min-height: 100vh;"
     >
       <router-view />
     </v-img>

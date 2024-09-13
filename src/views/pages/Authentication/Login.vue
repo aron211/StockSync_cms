@@ -2,7 +2,7 @@
   <v-container id="login" class="fill-height" tag="section">
     <v-row justify="center">
       <v-slide-y-transition appear>
-        <base-material-card color="gray" light max-width="100%" width="400" class="px-5 py-3">
+        <base-material-card  light max-width="100%" width="400" class="px-5 py-3" style="opacity: 1; background-color: azure;">
           <template v-slot:heading>
             <div class="text-center">
               <h1 class="display-3 font-weight-bold mb-1">
